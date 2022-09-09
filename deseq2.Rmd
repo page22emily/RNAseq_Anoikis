@@ -1,0 +1,177 @@
+---
+title: "Deseq2"
+output: html_document
+date: "2022-09-09"
+---
+Normalized Counts file is from the results from Lara and Felipe "all" folder 
+
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+library(tximport)
+library(GenomicFeatures)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(DESeq2)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txdb <- makeTxDbFromGFF(file="CHANGE_THIS_PATH/gencode.v19.annotation.gtf") #this is a file path. Add the path for this file name here
+saveDb(x=txdb, file = "gencode.v19.annotation.gtf_withproteinids.TxDb") #this is the name of the file. Don't touch it
+k <- keys(txdb, keytype = "TXNAME")
+tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dir <- "CHANGE_THIS_PATH/quants"  #this is a path that you will change. This is the quants folder from Salmon that should be locally on your computer 
+samples <- read.csv(file= "CHANGE_THIS_PATH/sample_info_tximport.csv") #CSV is a metadata file. A sample of this file is on github 
+files <- file.path(dir, samples$SRR, "quant.sf")
+all(file.exists(files))
+```
+
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txi <- tximport(files, type = "salmon", tx2gene= tx2gene, ignoreAfterBar= TRUE)
+names(txi)
+```
+
+This is for setting up the meta data and DESeq2 object so that you can do your analysis 
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+sample_meta_data <- read.csv(file= "CHANGE_THIS_PATH/meta.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
+sampleFiles <- samples$SRR
+sampleCondition <- sample_meta_data$Treatment  #this one you can change to whatever column you want in your meta data for comparisons 
+sampleTable <- data.frame(sampleName = sampleFiles,
+                          fileName = sampleFiles,
+                          condition = sampleCondition)
+sampleTable$condition <- factor(sampleTable$condition)
+```
+
+
+```{r echo=FALSE}
+colnames(txi$counts) <- rownames(sampleTable)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeqDataSetFromTximport(txi, sampleTable, ~condition)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeq(dds)
+```
+
+This is going to tell you information about the results from running DESeq2 
+```{r}
+res <- results(dds)
+res
+```
+
+This is to save the results so that you can look at them later/ comparisons for analysis 
+```{r}
+write.csv(res, "CHANGE_THIS_PATH/results_post_vs_pre_aging_tcga.csv")
+```
+
+
+You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
+Here is an example template. There's a # in front of it so that it is not running 
+```{r}
+#res_2 <- results(dds, contrast=c("condition","SAY WHICH ONE","AND THE OTHER"))
+```
+
+
+```{r echo=FALSE}
+resOrdered <- res[order(res$pvalue),]
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res)
+```
+
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+Now you can start going through the plot functions and seeing what the data actually looks like 
+```{r echo=FALSE}
+plotMA(res, ylim=c(-2,2))
+```
+
+```{r echo=FALSE}
+plotMA(res05, ylim=c(-2,2))
+```
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+```
+
+```{r}
+rld <- rlog(dds, blind=FALSE)
+```
+
+```{r}
+ntd <- normTransform(dds)
+```
+
+```{r}
+library("vsn")
+meanSdPlot(assay(ntd))
+```
+
+```{r}
+meanSdPlot(assay(vsd))
+```
+
+```{r}
+sampleDists <- dist(t(assay(vsd)))
+```
+
+```{r}
+library("RColorBrewer")
+library("pheatmap")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$condition)
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors, annRow= vsd$condition)
+```
+```{r}
+plotPCA(vsd, intgroup=c("condition"))
+```
+
+```{r}
+plotDispEsts(dds)
+```
+
+### Graphs for Genes of Interest
+
+- Gene needs to be the ENSEMBL ID. Each one will have its own version based on the reference that you are using 
+
+New steps, more packages: 
+
+```{r}
+BiocManager::install("ggVennDiagram")
+```
+
+```{r setup, include=FALSE}
+library(ggplot2)
+```
+
+This is the basic one 
+```{r echo=FALSE}
+plotCounts(dds, gene= "CHANGE_THIS_ENSG0000000.00", intgroup="condition")
+```
+
+
+This is the pretty one 
+Groups= the condition groups for what you want to look at in your DESeq2 object 
+```{r}
+counts <- counts(dds['ENSG00000182035.11',], normalized = TRUE)
+col = c("CHANGE_THIS_GROUP_A"= "#481567FF", "CHANGE_THIS_GROUP_B"= "#2D708EFF", "CHANGE_THIS_GROUP_C"= "#29AF7FFF")
+m <- list(counts = as.numeric(counts), group= sampleTable$condition)
+m <- as_tibble(m)
+q <- ggplot(m, aes(group, counts)) + geom_boxplot(aes(fill= group)) + geom_jitter(width = 0.1) + aes(color= group) + scale_fill_manual(values = alpha(col,.3)) +scale_color_manual(values = alpha(col, 1.0)) + theme(text = element_text(size = 13)) + theme(axis.text.y = element_text(size = 17)) + theme(legend.position="none")
+q <- q + labs(y = "Normalized Counts ", title = "Expression of CHANGE THIS GENE NAME")
+q
+```
