@@ -62,6 +62,8 @@ Here is an example template. There's a # in front of it so that it is not runnin
 ```
 
 
+This is all for the comparison of 0 vs 7 
+
 ```{r echo=FALSE}
 resOrdered <- res[order(res$pvalue),]
 ```
@@ -123,7 +125,8 @@ pheatmap(sampleDistMatrix,
          col=colors, annRow= vsd$condition)
 ```
 ```{r}
-plotPCA(vsd, intgroup=c("condition"))
+legend_title <- "Passage"
+plotPCA(vsd, intgroup=c("condition")) + labs(title= "Principle Component Analysis of the 6 Passages based on RNAseq") + theme(text = element_text(size = 10))+ labs(fill = "Passage") + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) 
 ```
 
 ```{r}
@@ -171,11 +174,151 @@ library("ggbeeswarm")
 geneCounts <- plotCounts(dds, gene = "ENSG00000163735.7", intgroup = c("condition"),
                          returnData = TRUE)
 ggplot(geneCounts, aes(x = condition, y = count, color = condition)) +
-  scale_y_log10() +  geom_beeswarm(cex = 3)
+  scale_y_log10() +  geom_beeswarm(cex = 3) 
 ```
 
 ```{r}
 ggplot(geneCounts, aes(x = condition, y = count, color = condition, group = "condition")) +
   scale_y_log10() + geom_point(size = 3) + geom_line()
 ```
+Comparison Group: 0 vs 1 
+```{r}
+res_2 <- results(dds, contrast=c("condition","0","1"))
+```
+
+```{r echo=FALSE}
+resOrdered <- res_2[order(res_2$pvalue),]
+```
+ 
+```{r}
+summary(res_2)
+```
+
+```{r echo=FALSE}
+plotMA(res_2, ylim=c(-2,2))
+```
+
+```{r}
+resLFC1.5 <- results(dds, lfcThreshold=1.5, contrast=c("condition","0","1") )
+x <-table(resLFC1.5$padj < 0.05)
+```
+
+```{r}
+head(x)
+```
+
+```{r}
+#reset par
+par(mfrow=c(1,1))
+# Make a basic volcano plot
+with(res_2, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", xlim=c(-3,3)))
+
+# Add colored points: blue if padj<0.01, red if log2FC>1 and padj<0.05)
+with(subset(res_2, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
+with(subset(res_2, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
+```
+
+```{r}
+write.csv(resLFC1.5 ,"~/Desktop/anoikis/resLFC1_5_0vs1.csv")
+```
+
+Comparison Group: 0 vs 1 
+```{r}
+res_3 <- results(dds, contrast=c("condition","0","4"))
+```
+
+```{r echo=FALSE}
+resOrdered <- res_3[order(res_3$pvalue),]
+```
+ 
+```{r}
+summary(res_3)
+```
+
+```{r echo=FALSE}
+plotMA(res_3, ylim=c(-2,2))
+```
+
+
+```{r}
+resLFC1.5 <- results(dds, lfcThreshold=1.5, contrast=c("condition","0","4"))
+x <-table(resLFC1.5$padj < 0.05)
+```
+
+```{r}
+head(x)
+```
+
+```{r}
+#reset par
+par(mfrow=c(1,1))
+# Make a basic volcano plot
+with(res_3, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", xlim=c(-3,3)))
+
+# Add colored points: blue if padj<0.01, red if log2FC>1 and padj<0.05)
+with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
+with(subset(res, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
+```
+
+```{r}
+write.csv(resLFC1.5 ,"~/Desktop/anoikis/resLFC1_5_0vs4.csv")
+```
+
+#Aurora Kinase A 
+```{r}
+counts <- counts(dds['ENSG00000087586.18',], normalized = TRUE)
+col = c("0.0"= "#481567FF", "1.0"= "#2D708EFF", "3.3"= "#29AF7FFF", "4.0"= "#E3E41&FE", "6.6"= "#EDE725FF", "7.0"= "#287C8EFF")
+m <- list(counts = as.numeric(counts), group = as.character(sample_meta_data$Time_Point))
+m <- as_tibble(m)
+q <- ggplot(m, aes(group, counts)) + geom_boxplot(aes(fill= group))
+q <- q + labs(y = "Normalized Counts", title = "Expression of AURKA") + theme(legend.position= "none") + labs(x= "Passage") + theme(text = element_text(size = 20)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+q
+```
+```{r}
+counts <- counts(dds['ENSG00000178999.13',], normalized = TRUE)
+col = c("0.0"= "#481567FF", "1.0"= "#2D708EFF", "3.3"= "#29AF7FFF", "4.0"= "#E3E41&FE", "6.6"= "#EDE725FF", "7.0"= "#287C8EFF")
+m <- list(counts = as.numeric(counts), group = as.character(sample_meta_data$Time_Point))
+m <- as_tibble(m)
+q <- ggplot(m, aes(group, counts)) + geom_boxplot(aes(fill= group))
+q <- q + labs(y = "Normalized Counts", title = "Expression of AURKB") + theme(legend.position= "none") + labs(x= "Passage") + theme(text = element_text(size = 20)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+q
+```
+```{r}
+counts <- counts(dds['ENSG00000141510.18',], normalized = TRUE)
+col = c("0.0"= "#481567FF", "1.0"= "#2D708EFF", "3.3"= "#29AF7FFF", "4.0"= "#E3E41&FE", "6.6"= "#EDE725FF", "7.0"= "#287C8EFF")
+m <- list(counts = as.numeric(counts), group = as.character(sample_meta_data$Time_Point))
+m <- as_tibble(m)
+q <- ggplot(m, aes(group, counts)) + geom_boxplot(aes(fill= group))
+q <- q + labs(y = "Normalized Counts", title = "Expression of p53") + theme(legend.position= "none") + labs(x= "Passage") + theme(text = element_text(size = 20)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+q
+```
+```{r}
+counts <- counts(dds['ENSG00000105329.11',], normalized = TRUE)
+col = c("0.0"= "#481567FF", "1.0"= "#2D708EFF", "3.3"= "#29AF7FFF", "4.0"= "#E3E41&FE", "6.6"= "#EDE725FF", "7.0"= "#287C8EFF")
+m <- list(counts = as.numeric(counts), group = as.character(sample_meta_data$Time_Point))
+m <- as_tibble(m)
+q <- ggplot(m, aes(group, counts)) + geom_boxplot(aes(fill= group))
+q <- q + labs(y = "Normalized Counts", title = "Expression of TGFB1") + theme(legend.position= "none") + labs(x= "Passage") + theme(text = element_text(size = 20)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+q
+```
+```{r}
+counts <- counts(dds['ENSG00000049768.16',], normalized = TRUE)
+col = c("0.0"= "#481567FF", "1.0"= "#2D708EFF", "3.3"= "#29AF7FFF", "4.0"= "#E3E41&FE", "6.6"= "#EDE725FF", "7.0"= "#287C8EFF")
+m <- list(counts = as.numeric(counts), group = as.character(sample_meta_data$Time_Point))
+m <- as_tibble(m)
+q <- ggplot(m, aes(group, counts)) + geom_boxplot(aes(fill= group))
+q <- q + labs(y = "Normalized Counts", title = "Expression of FOXP3") + theme(legend.position= "none") + labs(x= "Passage") + theme(text = element_text(size = 20)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+q
+```
+```{r}
+counts <- counts(dds['ENSG00000136997.21',], normalized = TRUE)
+col = c("0.0"= "#481567FF", "1.0"= "#2D708EFF", "3.3"= "#29AF7FFF", "4.0"= "#E3E41&FE", "6.6"= "#EDE725FF", "7.0"= "#287C8EFF")
+m <- list(counts = as.numeric(counts), group = as.character(sample_meta_data$Time_Point))
+m <- as_tibble(m)
+q <- ggplot(m, aes(group, counts)) + geom_boxplot(aes(fill= group))
+q <- q + labs(y = "Normalized Counts", title = "Expression of MYC") + theme(legend.position= "none") + labs(x= "Passage") + theme(text = element_text(size = 20)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+q
+```
+
+
 
