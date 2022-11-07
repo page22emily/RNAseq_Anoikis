@@ -1,0 +1,117 @@
+---
+title: "Cluster_Profiler_Hallmarks"
+output: html_document
+date: "2022-11-07"
+---
+#Details: 
+### This is to do a GSEA analysis using ONLY the MsigDB Hallmark pathways 
+### This is not done with clusterprofiler that I could find 
+### Clusterprofiler uses the Biological processes, molecular funtion, and cellular component options 
+### Generally speaking, what we want appears to be more niche than the base GSEA options 
+### So the next option is to find something that incorporates the MsigDB hallmark option 
+#### What I have found is the CRAN package msigdbr and I am going to attempt that and see what happens 
+#### I have checked for incorporation of msigdbr and clusterprofiler, and there is a sketchy documented way to do it 
+
+##CRAN Project Vignette: 
+https://cran.r-project.org/web/packages/msigdbr/vignettes/msigdbr-intro.html
+
+## Options for this analysis (more in depth)
+https://yulab-smu.top/biomedical-knowledge-mining-book/semantic-similarity-overview.html 
+
+Perks of the package: 
+There are all of them msigdb options present (that I know of) AND multiple species
+It is ridiculously basic 
+Formats make the tibble function easy to use without extra data wrangling 
+
+Set up (from the Vignette)
+```{r}
+library("msigdbr")
+library(clusterProfiler)
+library(enrichplot)
+# we use ggplot2 to add x axis labels (ex: ridgeplot)
+library(ggplot2)
+# SET THE DESIRED ORGANISM HERE
+organism = "org.Hs.eg.db"
+#BiocManager::install(organism, character.only = TRUE)
+library(organism, character.only = TRUE)
+```
+
+```{r}
+#to get the gene set that we want
+#in this particular setting we want the H genes, which are Hallmark genes 
+h_gene_sets = msigdbr(species = "Homo sapiens", category = "H")
+head(h_gene_sets)
+```
+
+```{r}
+m_t2g <- msigdbr(species = "Homo sapiens", category = "H") %>% 
+  dplyr::select(gs_name, ensembl_gene)
+head(m_t2g)
+```
+
+#this is from the first go round
+```{r}
+# reading in data from deseq2
+df = read.csv("~/Downloads/results/all/comparisons/group_P6.6_2D_vs_P0_2D_Wald.csv", header=TRUE)
+# we want the log2 fold change 
+original_gene_list <- df$log2FoldChange
+
+#list needs no decimal points
+no_decimals <- gsub('\\.[0-9]*$','', df$x)
+#now we are going to add this to the df 
+df$no_decimals <- no_decimals
+# name the vector
+names(original_gene_list) <- df$no_decimals
+
+# omit any NA values
+gene_list<-na.omit(original_gene_list)
+
+# sort the list in decreasing order (required for clusterProfiler)
+gene_list = sort(gene_list, decreasing = TRUE)
+gene.list <- data.frame(gene_list)
+```
+
+```{r }
+em <- enricher(df$no_decimals, TERM2GENE=m_t2g)
+head(em)
+```
+```{r}
+gse <- GSEA(gene_list,  minGSSize = 15, 
+             maxGSSize = 500, 
+             nPermSimple= 1000,
+             pvalueCutoff = 0.05, 
+             verbose = TRUE, 
+             pAdjustMethod = "none", TERM2GENE= m_t2g)
+```
+Adjusting for Min, Max, and Permutations to be the same as GSEA software 
+Min Size: 15, Max Size 500, Permutations 1000 and no p adj method 
+
+```{r}
+require(DOSE)
+dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign) + theme(axis.text.y = element_text(size = 5)) 
+```
+
+```{r}
+gse<-pairwise_termsim(gse, method = "JC", semData = NULL, showCategory = 200)
+emapplot(gse, showCategory = 15)  
+```
+
+```{r, out.width="50%"}
+# categorySize can be either 'pvalue' or 'geneNum'
+cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 10)
+```
+
+```{r, out.width="50%"}
+ridgeplot(gse) + labs(x = "enrichment distribution") + theme(axis.text.y = element_text(size = 5)) 
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+gseaplot(gse, by = "all", title = gse$Description[1], geneSetID = 1)
+```
+
+```{r, out.width="50%"}
+terms <- gse$Description[1:5]
+pmcplot(terms, 2010:2018, proportion=FALSE)
+```
+

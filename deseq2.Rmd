@@ -319,6 +319,11 @@ q <- ggplot(m, aes(group, counts)) + geom_boxplot(aes(fill= group))
 q <- q + labs(y = "Normalized Counts", title = "Expression of MYC") + theme(legend.position= "none") + labs(x= "Passage") + theme(text = element_text(size = 20)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
 q
 ```
+#Graphs from Lara with comparisons by group
+#they defined up and donw regulation (lfc of 1.5 in this option ) and had the passage comparison.
+```{r}
+
+```
 
 
 
