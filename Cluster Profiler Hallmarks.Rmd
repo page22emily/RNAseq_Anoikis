@@ -30,6 +30,7 @@ library(clusterProfiler)
 library(enrichplot)
 # we use ggplot2 to add x axis labels (ex: ridgeplot)
 library(ggplot2)
+library(cowplot)
 # SET THE DESIRED ORGANISM HERE
 organism = "org.Hs.eg.db"
 #BiocManager::install(organism, character.only = TRUE)
@@ -86,7 +87,12 @@ Min Size: 15, Max Size 500, Permutations 1000 and no p adj method
 
 ```{r}
 require(DOSE)
-dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign) + theme(axis.text.y = element_text(size = 5)) 
+dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign) + theme(axis.text.y = element_text(size = 4)) 
+```
+
+```{r}
+require(DOSE)
+dotplot(gse, showCategory=20, split=".sign") + facet_grid(.~.sign) + theme(axis.text.y = element_text(size = 4)) 
 ```
 
 ```{r}
@@ -96,7 +102,11 @@ emapplot(gse, showCategory = 15)
 
 ```{r, out.width="50%"}
 # categorySize can be either 'pvalue' or 'geneNum'
-cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 10)
+cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 10, node_label= "category", cex_label_category=0.5)
+```
+
+```{r}
+cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 20,  node_label= "category", cex_label_category=0.5)
 ```
 
 ```{r, out.width="50%"}
@@ -105,11 +115,124 @@ ridgeplot(gse) + labs(x = "enrichment distribution") + theme(axis.text.y = eleme
 
 ```{r}
 # Use the `Gene Set` param for the index in the title, and as the value for geneSetId
-gseaplot(gse, by = "all", title = gse$Description[1], geneSetID = 1)
+P1 <- gseaplot(gse, y = "all", title = gse$Description[1], geneSetID = 1)
+P1
 ```
 
-```{r, out.width="50%"}
-terms <- gse$Description[1:5]
-pmcplot(terms, 2010:2018, proportion=FALSE)
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P2 <- gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
+P2
 ```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P3<- gseaplot(gse, by = "all", title = gse$Description[3], geneSetID = 3)
+P3
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P4<- gseaplot(gse, by = "all", title = gse$Description[4], geneSetID = 4)
+P4
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P5<- gseaplot(gse, by = "all", title = gse$Description[5], geneSetID = 5)
+P5
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P6<- gseaplot(gse, by = "all", title = gse$Description[6], geneSetID = 6)
+P6
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P7<- gseaplot(gse, by = "all", title = gse$Description[7], geneSetID = 7)
+P7
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P8<- gseaplot(gse, by = "all", title = gse$Description[8], geneSetID = 8)
+P8
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P9<- gseaplot(gse, by = "all", title = gse$Description[9], geneSetID = 9)
+P9
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P10<- gseaplot(gse, by = "all", title = gse$Description[10], geneSetID = 10)
+P10
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P11<- gseaplot(gse, by = "all", title = gse$Description[11], geneSetID = 11)
+P11
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P12<- gseaplot(gse, by = "all", title = gse$Description[12], geneSetID = 12)
+P12
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P13<- gseaplot(gse, by = "all", title = gse$Description[13], geneSetID = 13)
+P13
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P14<- gseaplot(gse, by = "all", title = gse$Description[14], geneSetID = 14)
+P14
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P15<- gseaplot(gse, by = "all", title = gse$Description[15], geneSetID = 15)
+P15
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P16<- gseaplot(gse, by = "all", title = gse$Description[16], geneSetID = 16)
+P16
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P17<- gseaplot(gse, by = "all", title = gse$Description[17], geneSetID = 17)
+P17
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P18<- gseaplot(gse, by = "all", title = gse$Description[18], geneSetID = 18)
+P18
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P19<- gseaplot(gse, by = "all", title = gse$Description[19], geneSetID = 19)
+P19
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P20<- gseaplot(gse, by = "all", title = gse$Description[20], geneSetID = 20)
+P20
+```
+
+
+
 
