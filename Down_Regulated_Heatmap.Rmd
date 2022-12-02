@@ -1,0 +1,106 @@
+---
+title: "Heatmap_Down_Regulated"
+output: html_document
+date: "2022-11-21"
+---
+DOWN REGULATED GENE HEATMAP 
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+library(tximport)
+library(GenomicFeatures)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(DESeq2)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+sample_meta_data <- read.csv(file= "~/Desktop/anoikis/meta_data_anoikis.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
+sampleCondition <- sample_meta_data$Time_Point #this one you can change to whatever column you want in your meta data for comparisons 
+sampleTable <- data.frame(sampleName = sample_meta_data$Sample,
+                          fileName = sample_meta_data$Sample,
+                          condition = sampleCondition)
+sampleTable$condition <- factor(sampleTable$condition)
+```
+
+```{r}
+data <- read.csv("~/Desktop/anoikis/raw_counts_edited.csv")
+gene <- as.data.frame(data$GeneID)
+countDataMatrix <- as.matrix(data[ ,-1])
+rownames(countDataMatrix) <- data[,1]
+colData <- as.matrix(sample_meta_data$Sample)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+deseq2Data <- DESeqDataSetFromMatrix(countData= countDataMatrix, colData= sampleTable, design= ~ condition, tidy= FALSE)
+deseq2Data <- DESeq(deseq2Data)
+```
+
+```{r}
+deseq2Results <- results(deseq2Data)
+```
+
+```{r}
+summary(deseq2Results)
+```
+
+
+MA plot options: MA plots display a log ratio (M) vs an average (A) in order to visualize the differences between two groups. In general we would expect the expression of genes to remain consistent between conditions and so the MA plot should be similar to the shape of a trumpet with most points residing on a y intercept of 0.
+```{r}
+plotMA(deseq2Results)
+```
+
+```{r}
+library(ggplot2)
+library(scales) # needed for oob parameter
+library(viridis)
+
+# Coerce to a data frame
+deseq2ResDF <- as.data.frame(deseq2Results)
+
+# Examine this data frame
+head(deseq2ResDF)
+
+# Set a boolean column for significance
+deseq2ResDF$significant <- ifelse(deseq2ResDF$padj < .05, "Significant", NA)
+
+# Plot the results similar to DEseq2
+ggplot(deseq2ResDF, aes(baseMean, log2FoldChange, colour=significant)) + geom_point(size=1) + scale_y_continuous(limits=c(-3, 3), oob=squish) + scale_x_log10() + geom_hline(yintercept = 0, colour="tomato1", size=2) + labs(x="mean of normalized counts", y="log fold change") + scale_colour_manual(name="q-value", values=("Significant"="red"), na.value="grey50") + theme_bw()
+
+# Let's add some more detail
+ggplot(deseq2ResDF, aes(baseMean, log2FoldChange, colour=padj)) + geom_point(size=1) + scale_y_continuous(limits=c(-3, 3), oob=squish) + scale_x_log10() + geom_hline(yintercept = 0, colour="darkorchid4", size=1, linetype="longdash") + labs(x="mean of normalized counts", y="log fold change") + scale_colour_viridis(direction=-1, trans='sqrt') + theme_bw() + geom_density_2d(colour="black", size=2)
+```
+
+```{r}
+# Transform count data using the variance stablilizing transform
+deseq2VST <- vst(deseq2Data)
+
+# Convert the DESeq transformed object to a data frame
+deseq2VST <- assay(deseq2VST)
+deseq2VST <- as.data.frame(deseq2VST)
+deseq2VST$Gene <- rownames(deseq2VST)
+head(deseq2VST)
+```
+
+
+```{r}
+# Keep only the significantly differentiated genes where the fold-change was at least 3
+sigGenes <- rownames(deseq2ResDF[deseq2ResDF$padj <= .05 & deseq2ResDF$log2FoldChange < -1.5, ])
+deseq2VST <- deseq2VST[deseq2VST$Gene %in% sigGenes,]
+
+# Convert the VST counts to long format for ggplot2
+library(reshape2)
+
+# First compare wide vs long version
+deseq2VST_wide <- deseq2VST
+deseq2VST_long <- melt(deseq2VST, id.vars=c("Gene"))
+
+head(deseq2VST_wide)
+head(deseq2VST_long)
+
+# Now overwrite our original data frame with the long format
+deseq2VST <- melt(deseq2VST, id.vars=c("Gene"))
+
+# Make a heatmap
+heatmap <- ggplot(deseq2VST, aes(x=variable, y=Gene, fill=value)) + geom_raster() + scale_fill_viridis(trans="sqrt") + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+heatmap
+```
+
+

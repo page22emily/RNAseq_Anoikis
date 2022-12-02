@@ -58,7 +58,9 @@ write.csv(res, "~/Desktop/anoikis/results_anoikis.csv")
 You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
 Here is an example template. There's a # in front of it so that it is not running 
 ```{r}
-#res_2 <- results(dds, contrast=c("condition","SAY WHICH ONE","AND THE OTHER"))
+res_2 <- results(dds, contrast=c("condition","1","7"))
+
+write.csv(res_2,"~/Desktop/P1_vs_P7.csv")
 ```
 
 
@@ -88,7 +90,7 @@ plotMA(res05, ylim=c(-2,2))
 ```
 
 ```{r}
-vsd <- vst(dds, blind=FALSE)
+vsd <- vst(dds, blind=FALSE, nsub= 5000)
 ```
 
 ```{r}
@@ -117,13 +119,17 @@ library("RColorBrewer")
 library("pheatmap")
 sampleDistMatrix <- as.matrix(sampleDists)
 rownames(sampleDistMatrix) <- paste(vsd$condition)
-colnames(sampleDistMatrix) <- NULL
+colnames(sampleDistMatrix) <- NULL 
 colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
 pheatmap(sampleDistMatrix,
          clustering_distance_rows=sampleDists,
          clustering_distance_cols=sampleDists,
          col=colors, annRow= vsd$condition)
 ```
+
+
+
+
 ```{r}
 legend_title <- "Passage"
 plotPCA(vsd, intgroup=c("condition")) + labs(title= "Principle Component Analysis of the 6 Passages based on RNAseq") + theme(text = element_text(size = 10))+ labs(fill = "Passage") + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) 
@@ -364,14 +370,14 @@ ggplot() +
 I went ahead and manually counted the individual points that are present above so it can be in one graph 
 ```{r}
 library(tidyr)
-data <- read.csv("~/Desktop/Groups_by_Gene_Count.csv")
-data3 <- data[ -1, ]
+data3 <- read.csv("~/Desktop/Groups_by_Gene_Count.csv")
+data4 <- data[ -1, ]
 ```
 
 
 ```{r}
-data2 <- data3 %>%
-  pivot_longer(cols= P0.vs.P1:P0.vs.P7, names_to = "time_point", values_to= "counts"
+data5 <- data4 %>%
+  pivot_longer(cols= c(Group.P0_P1, Group.P0_P4, Group.P0_P7), names_to = "time_point", values_to= "counts"
 )
 ```
 
@@ -391,99 +397,52 @@ library(ComplexUpset)
 
 #THIS WORKED TO MAKE THE RIGHT DATASET. Hopefully 
 ```{r}
-data <- read.csv("~/Desktop/data_table_regulation_comparison.csv")
-data2 <- data %>%
-  pivot_longer(cols= c(Group.P0_P1,Group.P0_P4,Group.P0_P7), names_to = "time_point", values_to= c("Group")
+data <- as.data.frame(read.csv("~/Desktop/data_table_regulation_comparison_2.csv"))
+data2 <- data[ , c(1,2,4,6)]
+Group <- colnames(data2)[c(2:4)]
+Gene_Change <- colnames(data)[c(3,5,7)]
+```
+
+```{r}
+upset(data, Group, name='Time Point Comparison', width_ratio=0.1)
+```
+
+#Now we have to make this data work to incorporate both pieces of data 
+```{r}
+data_5 <- data %>%
+  pivot_longer(cols= c(Group.P0_P1, Group.P0_P4, Group.P0_P7), names_to = "time_point", values_to= "counts"
 )
-
-Group <- data2$time_point
 ```
 
-Another option 
-1. Subset the separate Values from the count files and assign a unique variable to each 
-2. Overlaps from ComplexUpset
-3. Graph accordingly 
 
 ```{r}
-P0_vs_P1 <- read.csv("~/Downloads/results/all/comparisons/group_P1_3D_vs_P0_2D_Wald.csv")
-P0_vs_P1_Up <- subset(P0_vs_P1[ which(P0_vs_P1$log2FoldChange > 1.5 
-& P0_vs_P1$padj < 0.05), ])
-P0_vs_P1_Down <- subset(P0_vs_P1[ which(P0_vs_P1$log2FoldChange < -1.5 
-& P0_vs_P1$padj < 0.05), ])
+upset(data_5, Group, name='Time Point Comparison', base_annotations=list(
+        'Intersection size'=intersection_size(
+            counts=FALSE,
+            mapping=aes(fill=data_5$counts)
+        )
+    ),
+    width_ratio=0.1)
 ```
+#Yay this one worked! Except it held onto the triplicate of when we did pivot_longer 
+```{r}
+dataP01 <- as.data.frame(paste(data$P0_P1.padj, data$Group.P0_P1))
+
+dataP04 <- as.data.frame(paste(data$P0_P4.padj, data$Group.P0_P4))
+
+dataP07 <- as.data.frame(paste(data$P0_P7.padj, data$Group.P0_P7))
+
+datagene.id <- as.data.frame(paste(data$gene_id))
+```
+
+
 
 ```{r}
-P0_vs_P4 <- read.csv("~/Downloads/results/all/comparisons/group_P4_3D_vs_P0_2D_Wald.csv")
-P0_vs_P4_Up <- subset(P0_vs_P4[ which(P0_vs_P4$log2FoldChange > 1.5 
-& P0_vs_P4$padj < 0.05), ])
-P0_vs_P4_Down <- subset(P0_vs_P4[ which(P0_vs_P4$log2FoldChange < -1.5 
-& P0_vs_P4$padj < 0.05), ])
+write.csv(dataP01, "~/Desktop/P1.csv")
+write.csv(dataP04, "~/Desktop/P4.csv")
+write.csv(dataP07, "~/Desktop/P7.csv")
+write.csv(datagene.id, "~/Desktop/geneid.csv")
 ```
 
-```{r}
-P0_vs_P7 <- read.csv("~/Downloads/results/all/comparisons/group_P7_3D_vs_P0_2D_Wald.csv")
-P0_vs_P7_Up <- subset(P0_vs_P7[ which(P0_vs_P7$log2FoldChange > 1.5 
-& P0_vs_P7$padj < 0.05), ])
-P0_vs_P7_Down <- subset(P0_vs_P7[ which(P0_vs_P7$log2FoldChange < -1.5 
-& P0_vs_P7$padj < 0.05), ])
-```
 
-```{r}
-data <- as.matrix(x= c("P0_vs_P1 up-regulated" = P0_vs_P1_Up,
-                   "P0_vs_P1 down-regulated" = P0_vs_P1_Down,
-                   "P0_vs_P4 up-regulated" = P0_vs_P4_Up,
-                   "P0_vs_P4 down-regulated" = P0_vs_P4_Down,
-                   "P0_vs_P7 up-regulated" = P0_vs_P7_Up,
-                   "P0_vs_P7 down-regulated" = P0_vs_P7_Down))
-
-```
-
-```{r}
-upset_gene <- upset(data, set_sizes=FALSE,
-      c('P0_vs_P1 up-regulated.gene_id', 'P0_vs_P1 down-regulated_.gene_id', 
-        'P0_vs_P4 up-regulated.gene_id', 'P0_vs_P4 down-regulated.gene_id', 
-        'P0_vs_P7 up-regulated.gene_id', 'P0_vs_P7 down-regulated.gene_id'),
-  queries=list(
-    upset_query(set='P0_vs_P1 up-regulated.gene_id', fill='red'),
-    upset_query(set='P0_vs_P1 down-regulated.gene_id', fill='blue'),
-    upset_query(set='P0_vs_P4  up-regulated.gene_id', fill='red'),
-    upset_query(set='P0_vs_P4 down-regulated.gene_id', fill='blue'),
-    upset_query(set='P0_vs_P7  up-regulated.gene_id', fill='red'),
-    upset_query(set='P0_vs_P7 down-regulated.gene_id', fill='blue')
-  ),
-  base_annotations=list(
-    'Intersection size'=(
-        intersection_size(
-        bar_number_threshold=1,  # show all numbers on top of bars
-        width=0.5,   # reduce width of the bars
-      )
-      # add some space on the top of the bars
-      + scale_y_continuous(expand=expansion(mult=c(0, 0.05)))
-      + theme(
-          # hide grid lines
-          panel.grid.major=element_blank(),
-          panel.grid.minor=element_blank(),
-          # show axis lines
-          axis.line=element_line(colour='black')
-      )
-    )
-  ),
-  stripes=upset_stripes(
-    geom=geom_segment(size=12),  # make the stripes larger
-    colors=c('grey95', 'white')
-  ),
-  # to prevent connectors from getting the colorured
-  # use `fill` instead of `color`, together with `shape='circle filled'`
-  matrix=intersection_matrix(
-      geom=geom_point(
-        shape='circle filled',
-        size=3,
-        stroke=0.45
-      )
-  ),
-  sort_sets='descending',
-  sort_intersections='descending'
-)
-upset_gene
-```
 
