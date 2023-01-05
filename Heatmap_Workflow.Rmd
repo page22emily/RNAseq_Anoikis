@@ -12,7 +12,7 @@ library(DESeq2)
 ```
 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
-sample_meta_data <- read.csv(file= "~/Desktop/anoikis/meta_data_anoikis.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
+sample_meta_data <- read.csv(file= "~/Documents/Mythreye_Lab/Mehri_Resha/anoikis/meta_data_anoikis.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
 sampleCondition <- sample_meta_data$Time_Point #this one you can change to whatever column you want in your meta data for comparisons 
 sampleTable <- data.frame(sampleName = sample_meta_data$Sample,
                           fileName = sample_meta_data$Sample,
@@ -21,7 +21,7 @@ sampleTable$condition <- factor(sampleTable$condition)
 ```
 
 ```{r}
-data <- read.csv("~/Desktop/anoikis/raw_counts_edited.csv")
+data <- read.csv("~/Documents/Mythreye_Lab/Mehri_Resha/anoikis/raw_counts_edited.csv")
 gene <- as.data.frame(data$GeneID)
 countDataMatrix <- as.matrix(data[ ,-1])
 rownames(countDataMatrix) <- data[,1]
@@ -81,10 +81,15 @@ head(deseq2VST)
 
 
 ```{r}
-# Keep only the significantly differentiated genes where the fold-change was at least 1.5 and we want to do the absolute value so that negative and postive are on the same figure 
-sigGenes <- rownames(deseq2ResDF[deseq2ResDF$padj <= .05 & abs(deseq2ResDF$log2FoldChange) > 1.5, ])
-deseq2VST <- deseq2VST[deseq2VST$Gene %in% sigGenes,]
+# Keep only the significantly differentiated genes where the fold-change was at least 1.5 
+sigGenes <- rownames(deseq2ResDF[deseq2ResDF$padj <= .05 & deseq2ResDF$log2FoldChange > 1.5, ])
+sigGenes2 <- rownames(deseq2ResDF[deseq2ResDF$padj <= .05 & deseq2ResDF$log2FoldChange < -1.5, ])
+sigGenes3 <- c(sigGenes, sigGenes2)
+deseq2VST <- deseq2VST[deseq2VST$Gene %in% sigGenes3,]
+```
 
+
+```{r}
 # Convert the VST counts to long format for ggplot2
 library(reshape2)
 
@@ -105,3 +110,5 @@ heatmap
 ```{r}
 ggsave("~/Desktop/heatmap_up_and_down_regulated_genes_anoikis.tiff", plot = last_plot())
 ```
+
+
