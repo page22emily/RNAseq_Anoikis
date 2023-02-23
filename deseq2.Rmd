@@ -53,7 +53,7 @@ res
 
 This is to save the results so that you can look at them later/ comparisons for analysis 
 ```{r}
-write.csv(res, "~/Desktop/anoikis/results_anoikis.csv")
+write.csv(res, "~/Desktop/results_anoikis.csv")
 ```
 
 
@@ -128,8 +128,6 @@ pheatmap(sampleDistMatrix,
          clustering_distance_cols=sampleDists,
          col=colors, annRow= vsd$condition)
 ```
-
-
 
 
 ```{r}
