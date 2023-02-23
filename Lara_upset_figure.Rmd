@@ -51,42 +51,33 @@ ggplot() +
 I went ahead and manually counted the individual points that are present above so it can be in one graph 
 ```{r}
 library(tidyr)
-data3 <- read.csv("~/Documents/Mythreye_Lab/Mehri_Resha/Gene comparison/Data_Up_and_Down_Comparisons .csv")
-```
-
-
-```{r}
-data5 <- t(data3)
-#to edit this data group so only the rows of interest are involved 
-data6 <- data5[c(1,3,5,7) , ]
-write.csv(data6, "~/Desktop/edits.csv")
-```
-
-
-```{r}
-data7 <- read.csv("~/Desktop/edits.csv")
-```
-
-
-```{r}
-data8 <- t(data7)
+#read in what we want 
+up <- read.csv("~/Desktop/Up_True_False.csv")
+down <- read.csv("~/Desktop/Down_True_False.csv")
+nc <- read.csv("~/Desktop/No_Change_True_False.csv")
 ```
 
 #The rest of Lara's figure is made with UpSet Figures 
 ## Need to use ComplexUpSet because the other one is out of date (yay Lara for telling me)
 ```{r}
 library(ggplot2)
-library(tidyr)
 library(ComplexUpset)
 ```
 
 #THIS WORKED TO MAKE THE RIGHT DATASET. Hopefully 
 ```{r}
-Group <- rownames(data6)[c(2:4)]
+Group <- colnames(up)[c(2:4)]
 Group
 ```
 
+```{r}
+upset(up, Group)
+```
 
 ```{r}
-upset(data3, Group)
+upset(down, Group)
+```
+
+```{r}
+upset(nc, Group)
 ```
