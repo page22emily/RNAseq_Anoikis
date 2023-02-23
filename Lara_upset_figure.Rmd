@@ -71,13 +71,13 @@ Group
 ```
 
 ```{r}
-upset(up, Group)
+upset(up, Group, min_degree=1) + ggtitle('Up Regulated Genes') 
 ```
 
 ```{r}
-upset(down, Group)
+upset(down, Group,  min_degree=1) + ggtitle("Down Regulated Genes")
 ```
 
 ```{r}
-upset(nc, Group)
+upset(nc, Group, min_degree=1) + ggtitle("Genes with No Significant Change")
 ```
