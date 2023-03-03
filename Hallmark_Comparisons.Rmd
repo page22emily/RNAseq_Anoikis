@@ -1,0 +1,99 @@
+---
+title: "Hallmark_Comparisons"
+output: html_document
+date: "2023-03-01"
+---
+
+This is to define the differences in the Hallmarks found in from clusterprofiler. 
+Because of the hypothesis correction (and to simplify why the hallmarks were picked vs not),
+I am using the results table where the p value is set to 1 as the cutoff. 
+This will include ALL of the hallmarks so that we can see what is happening even w/o a 
+significant p value 
+
+Figures needed: 
+Bar graphs of the enrichment scores and time points for each cell line 
+Correlation between OV90 and CAOV3 DEGS driving the hallmarks?
+Correlation between OV90 and CAOV3 hallmarks? with leading edge or enrichment score? 
+
+Set Up: 
+
+OV90
+```{r}
+OV90TP01 <- read.csv("~/Desktop/Hallmarks/OV90_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP04 <- read.csv("~/Desktop/Hallmarks/OV90_gse_0_vs_4_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP06 <- read.csv("~/Desktop/Hallmarks/OV90_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP07 <- read.csv("~/Desktop/Hallmarks/OV90_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+
+OV90TP01 <- OV90TP01[order(OV90TP01$X),]
+OV90TP04 <- OV90TP04[order(OV90TP04$X),]
+OV90TP06 <- OV90TP06[order(OV90TP06$X),]
+OV90TP07 <- OV90TP07[order(OV90TP07$X),]
+```
+
+```{r}
+OV90_enrich <- as.data.frame(OV90TP01$X)
+OV90_enrich$P0_vs_P1_enrich <- OV90TP01$enrichmentScore
+OV90_enrich$P0_vs_P6_enrich <- OV90TP06$enrichmentScore
+OV90_enrich$P0_vs_P7_enrich <- OV90TP07$enrichmentScore
+OV90_enrich$P0_vs_P1_p_val <- OV90TP01$p.adjust
+OV90_enrich$P0_vs_P6_p_val <- OV90TP06$p.adjust
+OV90_enrich$P0_vs_P7_p_val <- OV90TP07$p.adjust
+```
+
+CAOV3
+```{r}
+CAOV3TP01 <- read.csv("~/Desktop/CAOV3/Hallmarks/CAOV3_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP06 <- read.csv("~/Desktop/CAOV3/Hallmarks/CAOV3_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP07 <- read.csv("~/Desktop/CAOV3/Hallmarks/CAOV3_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP01 <- CAOV3TP01[order(CAOV3TP01$X),]
+CAOV3TP06 <- CAOV3TP06[order(CAOV3TP06$X),]
+CAOV3TP07 <- CAOV3TP07[order(CAOV3TP07$X),]
+```
+
+```{r}
+CAOV3_enrich <- as.data.frame(CAOV3TP01$X)
+CAOV3_enrich$P0_vs_P1_enrich <- CAOV3TP01$enrichmentScore
+CAOV3_enrich$P0_vs_P6_enrich <- CAOV3TP06$enrichmentScore
+CAOV3_enrich$P0_vs_P7_enrich <- CAOV3TP07$enrichmentScore
+CAOV3_enrich$P0_vs_P1_p_val <- CAOV3TP01$p.adjust
+CAOV3_enrich$P0_vs_P6_p_val <- CAOV3TP06$p.adjust
+CAOV3_enrich$P0_vs_P7_p_val <- CAOV3TP07$p.adjust
+```
+
+```{r}
+OV90_enrich_enrich_t <- t(OV90_enrich)
+COV3_enrich_t <- t(CAOV3_enrich)
+```
+
+Plot 1: Bar Graph for OV90 
+```{r}
+library(ggplot2)
+library(tibble)
+library(tidyr)
+```
+
+Simple Version first 
+```{r}
+x <- OV90TP01$enrichmentScore
+y <- OV90TP01$X
+ggplot(OV90TP01, aes(x = x, y = y)) + geom_col()
+```
+```{r}
+Ov90 <- OV90_enrich[ , 1:4]
+Ov90_fix <- pivot_longer(Ov90, col= 2:4, names_to = "Time_Point", values_to = "enrichment_score")
+```
+
+
+ggplot(data, aes(fill=condition, y=value, x=specie)) + 
+    geom_bar(position="dodge", stat="identity")
+```{r}
+x= Ov90_fix$enrichment_score
+y= Ov90_fix$`OV90TP01$X`
+condition= Ov90_fix$Time_Point
+fill = c("P0_vs_P1_enrich" = "blue", "P0_vs_P6_enrich"= "green", "P0_vs_P7_enrich"= "red")
+ggplot(Ov90_fix, aes(x = x, y = y, fill=condition)) + geom_bar(position="dodge", stat="identity") + theme(text = element_text(size = 5))
+```
+```{r}
+ggsave( "~/Desktop/OV90_Hallmarks.tiff", plot = last_plot())
+```
+
