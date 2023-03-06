@@ -117,3 +117,82 @@ ggplot(Ov90_fix, aes(x = x, y = y, fill=condition)) + geom_bar(position="dodge",
 ```{r}
 ggsave( "~/Desktop/CAOV3_Hallmarks.tiff", plot = last_plot())
 ```
+
+Correlation with each of the Hallmarks of interest between 2 groups 
+Time Points: 0 vs 1, 0 vs 6, and 0 vs 7 
+x= Values from each time point for OV90
+y= values from each time point for CAOV3
+
+Hallmark: Apoptosis
+```{r}
+x= c(-0.9825651, -1.5087363, -1.5239173)
+y= c(-0.9281952, 0.7372908, 0.9404580)
+cor(x, y, method="spearman")
+```
+Hallmark: DNA Repair
+```{r}
+x= c(1.4070070, 2.0681664, 1.457102)
+y= c(0.5238526, -0.4697545, 0.9783721)
+cor(x, y, method="spearman")
+```
+
+Hallmark: EMT Transition 
+```{r}
+x= c(-2.0028934, -2.0517195, -2.2485282)
+y= c(1.0029257, 0.9165177, -1.0500215)
+cor(x, y, method="spearman")
+```
+
+Hallmark: Hypoxia 
+```{r}
+x= c(-1.4394120, -1.8421854, -1.8107448)
+y= c(0.9631905, 0.9539884, -0.761236)
+cor(x, y, method="spearman")
+```
+
+Hallmark: MYC Targets 1 
+```{r}
+x= c(2.1191418, 3.2657941, 2.1405298)
+y= c(0.5401359, -0.8328963, 0.8584446)
+cor(x, y, method="spearman")
+```
+
+Hallmark: MYC Targets 2 
+```{r}
+x= c(2.5785846, 3.0082819, 2.3144416)
+y= c(0.4764749, 0.4947812, 1.0306296)
+cor(x, y, method="spearman")
+```
+
+Hallmark: Oxidative Phosphorylation 
+```{r}
+x= c(0.7668218, 2.0918529, 2.0028311)
+y= c(-0.6559993, -0.7876771, 2.1349991)
+cor(x, y, method="spearman")
+```
+
+Hallmark: P53 Pathway 
+```{r}
+x= c(1.4505041, -1.0797355, -0.9764590)
+y= c(0.6312201, 0.7601836, 0.9926434)
+cor(x, y, method="spearman")
+```
+
+Hallmark: PI3K/ AKT/ MTOR Signaliing
+```{r}
+x= c(1.0946301, -0.7986252, -0.8275736)
+y= c(0.5713421, 0.7493017, -0.4715513)
+cor(x, y, method="spearman")
+```
+
+Hallmark: ROS
+```{r}
+x= c(1.4981570, -0.7757209, -0.7040551)
+y= c(0.3606325, 0.5663122, 1.2709404)
+cor(x, y, method="spearman")
+```
+
+
+
+
+
