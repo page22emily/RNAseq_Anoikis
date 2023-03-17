@@ -21,15 +21,19 @@ Set Up:
 
 OV90
 ```{r}
-OV90TP01 <- read.csv("~/Desktop/Hallmarks/OV90_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
-OV90TP04 <- read.csv("~/Desktop/Hallmarks/OV90_gse_0_vs_4_1k_perm_pval_1_cutoff_BH.csv")
-OV90TP06 <- read.csv("~/Desktop/Hallmarks/OV90_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
-OV90TP07 <- read.csv("~/Desktop/Hallmarks/OV90_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP01 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP04 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_4_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP06 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP07 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP17 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_1_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+```
 
+```{r}
 OV90TP01 <- OV90TP01[order(OV90TP01$X),]
 OV90TP04 <- OV90TP04[order(OV90TP04$X),]
 OV90TP06 <- OV90TP06[order(OV90TP06$X),]
 OV90TP07 <- OV90TP07[order(OV90TP07$X),]
+OV90TP17 <- OV90TP17[order(OV90TP17$X),]
 ```
 
 ```{r}
@@ -37,19 +41,23 @@ OV90_enrich <- as.data.frame(OV90TP01$X)
 OV90_enrich$P0_vs_P1_enrich <- OV90TP01$NES
 OV90_enrich$P0_vs_P6_enrich <- OV90TP06$NES
 OV90_enrich$P0_vs_P7_enrich <- OV90TP07$NES
+OV90_enrich$P1_vs_P7_enrich <- OV90TP17$NES
 OV90_enrich$P0_vs_P1_p_val <- OV90TP01$p.adjust
 OV90_enrich$P0_vs_P6_p_val <- OV90TP06$p.adjust
 OV90_enrich$P0_vs_P7_p_val <- OV90TP07$p.adjust
+OV90_enrich$P1_vs_P7_p_val <- OV90TP17$p.adjust
 ```
 
 CAOV3
 ```{r}
-CAOV3TP01 <- read.csv("~/Desktop/CAOV3/Hallmarks/CAOV3_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
-CAOV3TP06 <- read.csv("~/Desktop/CAOV3/Hallmarks/CAOV3_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
-CAOV3TP07 <- read.csv("~/Desktop/CAOV3/Hallmarks/CAOV3_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP01 <- read.csv("~/Desktop/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP06 <- read.csv("~/Desktop/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP07 <- read.csv("~/Desktop/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP17 <- read.csv("~/Desktop/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_1_vs_7_1k_perm_pval_1_cutoff_BH.csv")
 CAOV3TP01 <- CAOV3TP01[order(CAOV3TP01$X),]
 CAOV3TP06 <- CAOV3TP06[order(CAOV3TP06$X),]
 CAOV3TP07 <- CAOV3TP07[order(CAOV3TP07$X),]
+CAOV3TP17 <- CAOV3TP17[order(CAOV3TP17$X),]
 ```
 
 ```{r}
@@ -57,9 +65,11 @@ CAOV3_enrich <- as.data.frame(CAOV3TP01$X)
 CAOV3_enrich$P0_vs_P1_enrich <- CAOV3TP01$NES
 CAOV3_enrich$P0_vs_P6_enrich <- CAOV3TP06$NES
 CAOV3_enrich$P0_vs_P7_enrich <- CAOV3TP07$NES
+CAOV3_enrich$P1_vs_P7_p_enrich <- CAOV3TP07$NES
 CAOV3_enrich$P0_vs_P1_p_val <- CAOV3TP01$p.adjust
 CAOV3_enrich$P0_vs_P6_p_val <- CAOV3TP06$p.adjust
 CAOV3_enrich$P0_vs_P7_p_val <- CAOV3TP07$p.adjust
+CAOV3_enrich$P1_vs_P7_p_val <- CAOV3TP17$p.adjust
 ```
 
 ```{r}
@@ -81,8 +91,8 @@ y <- OV90TP01$X
 ggplot(OV90TP01, aes(x = x, y = y)) + geom_col()
 ```
 ```{r}
-Ov90 <- OV90_enrich[ , 1:4]
-Ov90_fix <- pivot_longer(Ov90, col= 2:4, names_to = "Time_Point", values_to = "enrichment_score")
+Ov90 <- OV90_enrich[ , 1:5]
+Ov90_fix <- pivot_longer(Ov90, col= 2:5, names_to = "Time_Point", values_to = "enrichment_score")
 ```
 
 
@@ -92,7 +102,7 @@ ggplot(data, aes(fill=condition, y=value, x=specie)) +
 x= Ov90_fix$enrichment_score
 y= Ov90_fix$`OV90TP01$X`
 condition= Ov90_fix$Time_Point
-fill = c("P0_vs_P1_enrich" = "blue", "P0_vs_P6_enrich"= "green", "P0_vs_P7_enrich"= "red")
+fill = c("P0_vs_P1_enrich" = "blue", "P0_vs_P6_enrich"= "green", "P0_vs_P7_enrich"= "red", "P1_vs_P7_enrich"= "yellow")
 ggplot(Ov90_fix, aes(x = x, y = y, fill=condition)) + geom_bar(position="dodge", stat="identity") + theme(text = element_text(size = 5))
 ```
 ```{r}
@@ -100,8 +110,12 @@ ggsave( "~/Desktop/OV90_Hallmarks.tiff", plot = last_plot())
 ```
 
 ```{r}
-CAOV3 <- CAOV3_enrich[ , 1:4]
-CAOV3_fix <- pivot_longer(CAOV3, col= 2:4, names_to = "Time_Point", values_to = "enrichment_score")
+CAOV3 <- CAOV3_enrich[ , 1:5]
+```
+
+
+```{r}
+CAOV3_fix <- pivot_longer(CAOV3, col= 2:5, names_to = "Time_Point", values_to = "enrichment_score")
 ```
 
 
@@ -109,7 +123,7 @@ CAOV3_fix <- pivot_longer(CAOV3, col= 2:4, names_to = "Time_Point", values_to = 
 x= CAOV3_fix$enrichment_score
 y= CAOV3_fix$`CAOV3TP01$X`
 condition= CAOV3_fix$Time_Point
-fill = c("P0_vs_P1_enrich" = "blue", "P0_vs_P6_enrich"= "green", "P0_vs_P7_enrich"= "red")
+fill = c("P0_vs_P1_enrich" = "blue", "P0_vs_P6_enrich"= "green", "P0_vs_P7_enrich"= "red", "P1_vs_P7_enrich"= "yellow")
 ggplot(Ov90_fix, aes(x = x, y = y, fill=condition)) + geom_bar(position="dodge", stat="identity") + theme(text = element_text(size = 5))
 ```
 
@@ -118,81 +132,87 @@ ggplot(Ov90_fix, aes(x = x, y = y, fill=condition)) + geom_bar(position="dodge",
 ggsave( "~/Desktop/CAOV3_Hallmarks.tiff", plot = last_plot())
 ```
 
-Correlation with each of the Hallmarks of interest between 2 groups 
-Time Points: 0 vs 1, 0 vs 6, and 0 vs 7 
-x= Values from each time point for OV90
-y= values from each time point for CAOV3
-
-Hallmark: Apoptosis
+#significant hallmarks only (based on p val)
 ```{r}
-x= c(-0.9825651, -1.5087363, -1.5239173)
-y= c(-0.9281952, 0.7372908, 0.9404580)
-cor(x, y, method="spearman")
-```
-Hallmark: DNA Repair
-```{r}
-x= c(1.4070070, 2.0681664, 1.457102)
-y= c(0.5238526, -0.4697545, 0.9783721)
-cor(x, y, method="spearman")
+.rowNamesDF(OV90_enrich, make.names=TRUE) <- OV90_enrich$`OV90TP01$X`
+sig1 <- rownames(OV90_enrich[OV90_enrich$P0_vs_P1_p_val<= .25,])
+sig2 <- rownames(OV90_enrich[OV90_enrich$P0_vs_P6_p_val<= .25,])
+sig3 <- rownames(OV90_enrich[OV90_enrich$P0_vs_P7_p_val<= .25,])                 
+sig4 <- rownames(OV90_enrich[OV90_enrich$P1_vs_P7_p_val<= .25,])                   
+significant_hallmarks <- c(sig1, sig2, sig3, sig4)
+OV90_sign <- Ov90_fix[Ov90_fix$`OV90TP01$X` %in% significant_hallmarks,]
 ```
 
-Hallmark: EMT Transition 
 ```{r}
-x= c(-2.0028934, -2.0517195, -2.2485282)
-y= c(1.0029257, 0.9165177, -1.0500215)
-cor(x, y, method="spearman")
+x= OV90_sign$enrichment_score
+y= OV90_sign$`OV90TP01$X`
+condition= OV90_sign$Time_Point
+fill = c("P0_vs_P1_enrich" = "blue", "P0_vs_P6_enrich"= "green", "P0_vs_P7_enrich"= "red", "P1_vs_P7_enrich"= "yellow")
+ggplot(OV90_sign, aes(x = x, y = y, fill=condition)) + geom_bar(position="dodge", stat="identity") + theme(text = element_text(size = 5)) + theme(panel.background = element_blank()) + theme(axis.line = element_line(colour = "black"))
 ```
 
-Hallmark: Hypoxia 
 ```{r}
-x= c(-1.4394120, -1.8421854, -1.8107448)
-y= c(0.9631905, 0.9539884, -0.761236)
-cor(x, y, method="spearman")
+ggsave( "~/Desktop/OV90_sign_Hallmarks.tiff", plot = last_plot())
 ```
 
-Hallmark: MYC Targets 1 
 ```{r}
-x= c(2.1191418, 3.2657941, 2.1405298)
-y= c(0.5401359, -0.8328963, 0.8584446)
-cor(x, y, method="spearman")
+.rowNamesDF(CAOV3_enrich, make.names=TRUE) <- CAOV3_enrich$`CAOV3TP01$X`
+sig1 <- rownames(CAOV3_enrich[CAOV3_enrich$P0_vs_P1_p_val<= .25,])
+sig2 <- rownames(CAOV3_enrich[CAOV3_enrich$P0_vs_P6_p_val<= .25,])
+sig3 <- rownames(CAOV3_enrich[CAOV3_enrich$P0_vs_P7_p_val<= .25,])                 
+sig4 <- rownames(CAOV3_enrich[CAOV3_enrich$P1_vs_P7_p_val<= .25,])                   
+significant_hallmarks <- c(sig1, sig2, sig3, sig4)
+CAOV3_sign <- CAOV3_fix[CAOV3_fix$`CAOV3TP01$X` %in% significant_hallmarks,]
 ```
 
-Hallmark: MYC Targets 2 
 ```{r}
-x= c(2.5785846, 3.0082819, 2.3144416)
-y= c(0.4764749, 0.4947812, 1.0306296)
-cor(x, y, method="spearman")
+x= CAOV3_sign$enrichment_score
+y= CAOV3_sign$`CAOV3TP01$X`
+condition= CAOV3_sign$Time_Point
+fill = c("P0_vs_P1_enrich" = "blue", "P0_vs_P6_enrich"= "green", "P0_vs_P7_enrich"= "red", "P1_vs_P7_enrich"= "yellow")
+ggplot(CAOV3_sign, aes(x = x, y = y, fill=condition)) + geom_bar(position="dodge", stat="identity") + theme(text = element_text(size = 5)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
 ```
 
-Hallmark: Oxidative Phosphorylation 
 ```{r}
-x= c(0.7668218, 2.0918529, 2.0028311)
-y= c(-0.6559993, -0.7876771, 2.1349991)
-cor(x, y, method="spearman")
+ggsave( "~/Desktop/CAOV3_sign_Hallmarks.tiff", plot = last_plot())
 ```
 
-Hallmark: P53 Pathway 
+#Overlap Correlation with multiple time points 
 ```{r}
-x= c(1.4505041, -1.0797355, -0.9764590)
-y= c(0.6312201, 0.7601836, 0.9926434)
-cor(x, y, method="spearman")
-```
-
-Hallmark: PI3K/ AKT/ MTOR Signaliing
-```{r}
-x= c(1.0946301, -0.7986252, -0.8275736)
-y= c(0.5713421, 0.7493017, -0.4715513)
-cor(x, y, method="spearman")
-```
-
-Hallmark: ROS
-```{r}
-x= c(1.4981570, -0.7757209, -0.7040551)
-y= c(0.3606325, 0.5663122, 1.2709404)
-cor(x, y, method="spearman")
+P0_P6_combined <- as.data.frame(OV90_enrich$`OV90TP01$X`)
+P0_P6_combined$OV90 <- OV90_enrich$P0_vs_P6_enrich
+P0_P6_combined$CAOV3 <- CAOV3_enrich$P0_vs_P6_enrich
 ```
 
 
+```{r}
+OV90 <- P0_P6_combined$OV90
+CAOV3 <- P0_P6_combined$CAOV3
+tiff("~/Desktop/correlation_P0_vs_P6_OV90_CAOV3.tiff")
+plot(OV90, CAOV3, pch = 19, col = "black")
+dev.off()
+```
 
+```{r}
+# Pearson correlation
+cor(OV90, CAOV3, method= "pearson")
+```
 
+```{r}
+P1_P7_combined <- as.data.frame(OV90_enrich$`OV90TP01$X`)
+P1_P7_combined$OV90 <- OV90_enrich$P1_vs_P7_enrich
+P1_P7_combined$CAOV3 <- CAOV3_enrich$P1_vs_P7_p_enrich
+```
+
+```{r}
+OV90 <- P1_P7_combined$OV90
+CAOV3 <- P1_P7_combined$CAOV3
+tiff("~/Desktop/correlation_P1_P7_OV90_CAOV3.tiff")
+plot(OV90, CAOV3, pch = 19, col = "black")
+dev.off()
+```
+```{r}
+write.csv(P0_P6_combined, "~/Desktop/P0_P6_combined_OV90_CAOV3_Hallmarks.csv")
+write.csv(P1_P7_combined, "~/Desktop/P1_P7_combined_OV90_CAOV3_Hallmarks.csv")
+```
 
