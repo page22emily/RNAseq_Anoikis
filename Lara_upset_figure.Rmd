@@ -22,9 +22,9 @@ Table showing the percentage of genes in each category
 Files for this are labeled as Comparison Group_Gene_Annotation
 Column of interest will be labeled as Group
 ```{r}
-P0_vs_P1 <- read.csv("~/Desktop/P1_vs_P0_Gene_Annotation.csv")
-P0_vs_P4 <- read.csv("~/Desktop/P4_vs_P0_Gene_Annotation.csv")
-P0_vs_P7 <- read.csv("~/Desktop/P7_vs_P0_Gene_Annotation.csv")
+P0_vs_P1 <- read.csv("~/Documents/Mythreye_Lab/Mehri_Resha/Gene comparison/P1_vs_P0_Gene_Annotation.csv")
+P0_vs_P4 <- read.csv("~/Documents/Mythreye_Lab/Mehri_Resha/Gene comparison/P4_vs_P0_Gene_Annotation.csv")
+P0_vs_P7 <- read.csv("~/Documents/Mythreye_Lab/Mehri_Resha/Gene comparison/P7_vs_P0_Gene_Annotation.csv")
 ```
 
 ```{r}
@@ -35,89 +35,49 @@ library(ggplot2)
 ggplot() +
   geom_bar(data = P0_vs_P1, mapping = aes(x= Group, group =Group, fill = Group), position = "dodge") + xlab("P0 vs P1") + ylab("Total Number of Genes")  
 ```
+
 ```{r}
 #for the actual bar graph itself 
 ggplot() +
   geom_bar(data = P0_vs_P4, mapping = aes(x= Group, group =Group, fill = Group), position = "dodge") + xlab("P0 vs P4") + ylab("Total Number of Genes") 
 ```
+
 ```{r}
 #for the actual bar graph itself 
 ggplot() +
   geom_bar(data = P0_vs_P7, mapping = aes(x= Group, group =Group, fill = Group), position = "dodge") + xlab("P0 vs P7") + ylab("Total Number of Genes") 
 ```
+
 I went ahead and manually counted the individual points that are present above so it can be in one graph 
 ```{r}
 library(tidyr)
-data3 <- read.csv("~/Desktop/Groups_by_Gene_Count.csv")
-data4 <- data[ -1, ]
+#read in what we want 
+up <- read.csv("~/Desktop/Up_True_False.csv")
+down <- read.csv("~/Desktop/Down_True_False.csv")
+nc <- read.csv("~/Desktop/No_Change_True_False.csv")
 ```
 
-
-```{r}
-data5 <- data4 %>%
-  pivot_longer(cols= c(Group.P0_P1, Group.P0_P4, Group.P0_P7), names_to = "time_point", values_to= "counts"
-)
-```
-
-
-```{r}
-#for the actual bar graph itself 
-ggplot() +
-  geom_col(data = data2, mapping = aes(x= time_point, group= Group, y= counts, fill= Group), position = "dodge") + xlab("Comparison Groups") + ylab("Total Number of Genes") 
-```
 #The rest of Lara's figure is made with UpSet Figures 
 ## Need to use ComplexUpSet because the other one is out of date (yay Lara for telling me)
 ```{r}
 library(ggplot2)
-library(tidyr)
 library(ComplexUpset)
 ```
 
 #THIS WORKED TO MAKE THE RIGHT DATASET. Hopefully 
 ```{r}
-data <- as.data.frame(read.csv("~/Desktop/data_table_regulation_comparison_2.csv"))
-data2 <- data[ , c(1,2,4,6)]
-Group <- colnames(data2)[c(2:4)]
-Gene_Change <- colnames(data)[c(3,5,7)]
+Group <- colnames(up)[c(2:4)]
+Group
 ```
 
 ```{r}
-upset(data, Group, name='Time Point Comparison', width_ratio=0.1)
+upset(up, Group, min_degree=1) + ggtitle('Up Regulated Genes') 
 ```
-
-#Now we have to make this data work to incorporate both pieces of data 
-```{r}
-data_5 <- data %>%
-  pivot_longer(cols= c(Group.P0_P1, Group.P0_P4, Group.P0_P7), names_to = "time_point", values_to= "counts"
-)
-```
-
 
 ```{r}
-upset(data_5, Group, name='Time Point Comparison', base_annotations=list(
-        'Intersection size'=intersection_size(
-            counts=FALSE,
-            mapping=aes(fill=data_5$counts)
-        )
-    ),
-    width_ratio=0.1)
+upset(down, Group,  min_degree=1) + ggtitle("Down Regulated Genes")
 ```
-#Yay this one worked! Except it held onto the triplicate of when we did pivot_longer 
-```{r}
-dataP01 <- as.data.frame(paste(data$P0_P1.padj, data$Group.P0_P1))
-
-dataP04 <- as.data.frame(paste(data$P0_P4.padj, data$Group.P0_P4))
-
-dataP07 <- as.data.frame(paste(data$P0_P7.padj, data$Group.P0_P7))
-
-datagene.id <- as.data.frame(paste(data$gene_id))
-```
-
 
 ```{r}
-write.csv(dataP01, "~/Desktop/P1.csv")
-write.csv(dataP04, "~/Desktop/P4.csv")
-write.csv(dataP07, "~/Desktop/P7.csv")
-write.csv(datagene.id, "~/Desktop/geneid.csv")
+upset(nc, Group, min_degree=1) + ggtitle("Genes with No Significant Change")
 ```
-

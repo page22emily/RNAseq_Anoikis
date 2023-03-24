@@ -79,10 +79,16 @@ em <- enricher(df$no_decimals, TERM2GENE=m_t2g)
 gse <- GSEA(gene_list,  minGSSize = 15, 
              maxGSSize = 500, 
              nPermSimple= 1000,
-             pvalueCutoff = 0.05, 
+             pvalueCutoff = 1, 
              verbose = TRUE, 
-             pAdjustMethod = "none", TERM2GENE= m_t2g)
+             pAdjustMethod = "BH", TERM2GENE= m_t2g)
 ```
+Extract the data we need 
+```{r}
+gse_res <- gse@result
+write.csv(gse_res, "~/Desktop/OV90_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+```
+
 Adjusting for Min, Max, and Permutations to be the same as GSEA software 
 Min Size: 15, Max Size 500, Permutations 1000 and no p adj method 
 
