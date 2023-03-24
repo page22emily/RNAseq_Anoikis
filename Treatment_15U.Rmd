@@ -1,0 +1,183 @@
+---
+title: "Treatment15U"
+output: html_document
+date: "2023-03-23"
+---
+
+This is the documentation for the RNAseq tutorial, all in one place. 
+First things first, this is meant for you to be able to run with minimal assistance, 
+but if you need assistance, let me know. 
+
+Each section of code will have a little play button to run that section individually. 
+There is also an option on the top of this screen saying "run" with a green arrow. You 
+can run the whole document with the options in that, should you choose. 
+
+Each step will have a lot of documentation as well as where you need to add your own 
+information so that it runs correctly. 
+
+For file paths, there will be CHANGE_THIS_PATH/ that you change to match where the files are + the file name 
+Other locations will have a CHANGE_THIS and then whatever you need to change 
+
+So here are the steps that need to happen before you use this code: 
+- Download the FASTQs onto Cheaha 
+- Use Salmon for alignment for count data (this is easiest on Cheaha)
+    - Salmon is meant for count data and does NOT give variant data
+
+And this is what is going to happen in this code: 
+-   Tximport is a package to import count data from Salmon so that they can be imported into DESeq2
+    -   Mike Love's (author for most of the well used RNAseq packages) guide uses either tximport or txmeta
+    -   This was done with R and R Studio on my local Mac
+-   DESeq2 is the standard publication wise for normalizing counts
+    -   This is also Mike Love's package and is crazy well documented 
+    -   This was done with R and R Studio on my local Mac
+    -   Standard for normalization and analysis in most publications
+
+Now let's do the coding!
+
+This part you will only need to do once to download everything: 
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+library(tximport)
+library(GenomicFeatures)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(DESeq2)
+```
+
+The files in this next step can be found in a zip folder on Github called
+
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txdb <- loadDb("C:/Users/empage/Documents/Lab_Stuff/Lab_RNAseq_Tutorial/gencode.v19.annotation.gtf_withproteinids.TxDb")
+k <- keys(txdb, keytype = "TXNAME")
+tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+```
+
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dir <- "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/quants"  #this is a path that you will change. This is the quants folder from Salmon that should be locally on your computer 
+samples <- read.csv(file= "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/Meta_15U.csv") 
+files <- file.path(dir, samples$Sample_ID, "quant.sf")
+all(file.exists(files))
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txi <- tximport(files, type = "salmon", tx2gene= tx2gene, ignoreAfterBar= TRUE)
+names(txi)
+```
+
+
+This is for setting up the meta data and DESeq2 object so that you can do your analysis 
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+sample_meta_data <- read.csv(file= "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/Meta_15U.csv") 
+sampleFiles <- samples$Sample_ID
+sampleCondition <- sample_meta_data$Treatment
+sampleTable <- data.frame(sampleName = sampleFiles,
+                          fileName = sampleFiles,
+                          condition = sampleCondition)
+sampleTable$condition <- factor(sampleTable$condition)
+```
+
+
+```{r echo=FALSE}
+colnames(txi$counts) <- rownames(sampleTable)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeqDataSetFromTximport(txi, sampleTable, ~condition)
+dds$group <- factor(sample_meta_data$Passage)
+design(dds) <- ~ group
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeq(dds)
+```
+
+This is going to tell you information about the results from running DESeq2 
+```{r}
+res <- results(dds, contrast= c("group", "P0", "P1"))
+res
+```
+
+This is to save the results so that you can look at them later/ comparisons for analysis 
+```{r}
+write.csv(res, "CHANGE_THIS_PATH/results_post_vs_pre_aging_tcga.csv")
+```
+
+
+You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
+Here is an example template. There's a # in front of it so that it is not running 
+```{r}
+#res_2 <- results(dds, contrast=c("condition","SAY WHICH ONE","AND THE OTHER"))
+```
+
+
+```{r echo=FALSE}
+resOrdered <- res[order(res$pvalue),]
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res)
+```
+
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+Now you can start going through the plot functions and seeing what the data actually looks like 
+```{r echo=FALSE}
+plotMA(res, ylim=c(-2,2))
+```
+
+```{r echo=FALSE}
+plotMA(res05, ylim=c(-2,2))
+```
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+```
+
+```{r}
+rld <- rlog(dds, blind=FALSE)
+```
+
+```{r}
+ntd <- normTransform(dds)
+```
+
+```{r}
+library("vsn")
+meanSdPlot(assay(ntd))
+```
+
+```{r}
+meanSdPlot(assay(vsd))
+```
+
+```{r}
+sampleDists <- dist(t(assay(vsd)))
+```
+
+```{r}
+library("RColorBrewer")
+library("pheatmap")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$condition)
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors, annRow= vsd$condition)
+```
+
+```{r}
+plotPCA(vsd, intgroup=c("condition", "group"))
+```
+
+```{r}
+plotDispEsts(dds)
+```
+
+### Graphs for Genes of Interest
