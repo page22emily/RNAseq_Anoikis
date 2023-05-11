@@ -137,9 +137,6 @@ Here is another portion to see what all is in the DESeq2 object
 ```{r}
 summary(res_9)
 ```
-
-
-
 ```{r}
 res05 <- results(dds, alpha=0.05)
 summary(res05)
@@ -195,5 +192,187 @@ ggplot(comparisons_2, aes(x=Comparison, y= LFC.0.1)) + geom_point() +  labs(titl
 
 ```{r}
 plotDispEsts(dds)
+```
+#heatmaps 
+1. Extract individual sample's raw counts for the top genes with p val and LFC 
+2. Compare to the average of the time point we want to compare with  
+```{r}
+counts <- dds@assays@data@listData[["counts"]]
+```
+
+```{r}
+counts_PO_DMSO <- counts[ , 1:3]
+counts_P0_average_DMSO <- rowMeans(counts_PO_DMSO)
+counts_P1_DMSO <- counts[ , 4:6]
+counts_P1_averages_DMSO <- rowMeans(counts_P1_DMSO)
+counts_P11_DMSO <- counts[ , 7:9]
+counts_P11_averages_DMSO <- rowMeans(counts_P11_DMSO)
+counts_P0_15U <- counts[ , 10:12]
+counts_P0_average_15U <- rowMeans(counts_P0_15U)
+colnames(counts_P0_15U) <- c("One", "two", "three")
+counts_P0_15U <- as.data.frame(counts_P0_15U)
+counts_P1_15U <- counts[ , 13:15]
+colnames(counts_P1_15U) <- c("One", "two", "three")
+counts_P1_15U <- as.data.frame(counts_P1_15U)
+counts_P1_averages_15U <- rowMeans(counts_P1_15U)
+counts_P11_15U <- counts[ , 16:18]
+counts_P11_averages_15U <- rowMeans(counts_P11_15U)
+colnames(counts_P11_15U) <- c("One", "two", "three")
+counts_P11_15U <- as.data.frame(counts_P11_15U)
+```
+
+P0 15U vs DMSO
+```{r}
+df <- data.frame(counts_P0_average_DMSO)
+```
+
+
+```{r}
+library(data.table)
+library(gtools)
+df$P01 <- counts_P0_15U$One
+df$P02 <- counts_P0_15U$two
+df$P03 <- counts_P0_15U$three
+df$Difference_1 <- (df$P01 - df$counts_P0_average_DMSO)
+df$Difference_2 <- (df$P02 - df$counts_P0_average_DMSO)
+df$Difference_3 <- (df$P03 - df$counts_P0_average_DMSO)
+df$LFC_1 <- foldchange(df$P01, df$counts_P0_average_DMSO)
+df$LFC_2 <- foldchange(df$P02, df$counts_P0_average_DMSO)
+df$LFC_3 <- foldchange(df$P03, df$counts_P0_average_DMSO)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+res7 <- as.data.frame(res_7@listData[["log2FoldChange"]])
+res_7@rownames -> x 
+rownames(res7) <- x
+res7$padj <- res_7@listData[["padj"]]
+colnames(res7) <- c("LFC", "padj")
+```
+
+
+```{r}
+sigGenes1 <- rownames(res7[res7$LFC <= -1.25 & res7$padj <= 0.05, ])
+sigGenes2 <- rownames(res7[res7$LFC >= 1.25 & res7$padj <= 0.05, ])
+siggenes <- c(sigGenes1, sigGenes2)
+df_tokeep <- df[df$gene %in% siggenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , 8:11]
+```
+
+```{r}
+df_heat[df_heat == "NaN"] <- NA
+df_heat[df_heat == "Inf"] <- NA
+df_heat[df_heat == "-Inf"] <- NA
+df_heat_2 <- na.omit(df_heat)
+```
+
+```{r}
+library(ggplot2)
+library(scales) # needed for oob parameter
+library(viridis)
+```
+
+```{r}
+library(reshape2)
+# First compare wide vs long version
+deseq2VST_wide <- df_heat_2
+de2 <- melt(df_heat_2, id.vars=c("gene"))
+```
+
+```{r}
+heatmap <- ggplot(de2, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+heatmap
+```
+rest/ combine
+```{r}
+df$counts_P1_average_DMSO <- data.frame(counts_P1_averages_DMSO)
+df$counts_P11_average_DMSO <- data.frame(counts_P11_averages_DMSO)
+```
+
+```{r}
+library(data.table)
+library(gtools)
+df$P11 <- counts_P1_15U$One
+df$P12 <- counts_P1_15U$two
+df$P13 <- counts_P1_15U$three
+df$Difference_11 <- (df$P11 - df$counts_P1_average_DMSO)
+df$Difference_12 <- (df$P12 - df$counts_P1_average_DMSO)
+df$Difference_13 <- (df$P13 - df$counts_P1_average_DMSO)
+df$LFC_11 <- foldchange(df$P11, df$counts_P1_average_DMSO)
+df$LFC_12 <- foldchange(df$P12, df$counts_P1_average_DMSO)
+df$LFC_13 <- foldchange(df$P13, df$counts_P1_average_DMSO)
+
+df$P111 <- counts_P11_15U$One
+df$P112 <- counts_P11_15U$two
+df$P113 <- counts_P11_15U$three
+df$Difference_111 <- (df$P111 - df$counts_P11_average_DMSO)
+df$Difference_112 <- (df$P112 - df$counts_P11_average_DMSO)
+df$Difference_113 <- (df$P113 - df$counts_P11_average_DMSO)
+df$LFC_111 <- foldchange(df$P111, df$counts_P11_average_DMSO)
+df$LFC_112 <- foldchange(df$P112, df$counts_P11_average_DMSO)
+df$LFC_113 <- foldchange(df$P113, df$counts_P11_average_DMSO)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+res8 <- as.data.frame(res_8@listData[["log2FoldChange"]])
+res_8@rownames -> x 
+rownames(res8) <- x
+res8$padj <- res_8@listData[["padj"]]
+colnames(res8) <- c("LFC", "padj")
+
+res9 <- as.data.frame(res_9@listData[["log2FoldChange"]])
+res_9@rownames -> x 
+rownames(res9) <- x
+res9$padj <- res_9@listData[["padj"]]
+colnames(res9) <- c("LFC", "padj")
+```
+
+
+```{r}
+sigGenes3 <- rownames(res8[res8$LFC <= -1.25 & res8$padj <= 0.05, ])
+sigGenes4 <- rownames(res8[res8$LFC >= 1.25 & res8$padj <= 0.05, ])
+sigGenes5 <- rownames(res9[res9$LFC <= -1.25 & res9$padj <= 0.05, ])
+sigGenes6 <- rownames(res9[res9$LFC >= 1.25 & res9$padj <= 0.05, ])
+siggenes <- c(sigGenes1, sigGenes2, sigGenes3, sigGenes4, sigGenes5, sigGenes6)
+df_tokeep <- df[df$gene %in% siggenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(8:11, 20:22, 29:31)]
+```
+
+```{r}
+df_heat[df_heat == "NaN"] <- NA
+df_heat[df_heat == "Inf"] <- NA
+df_heat[df_heat == "-Inf"] <- NA
+df_heat_2 <- na.omit(df_heat)
+```
+
+```{r}
+library(ggplot2)
+library(scales) # needed for oob parameter
+library(viridis)
+```
+
+```{r}
+library(reshape2)
+# First compare wide vs long version
+deseq2VST_wide <- df_heat_2
+de2 <- melt(df_heat_2, id.vars=c("gene"))
+```
+
+```{r}
+heatmap <- ggplot(de2, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+heatmap
 ```
 
