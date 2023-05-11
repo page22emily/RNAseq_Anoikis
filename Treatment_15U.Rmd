@@ -351,6 +351,13 @@ df_tokeep <- df[df$gene %in% siggenes, ]
 df_heat <- df_tokeep[ , c(8:10, 20:22, 29:31,11)]
 ```
 
+
+```{r}
+df_heat_2 <- unlist(df_heat)
+gene <- df_heat$gene
+df_heat_2$gene <- gene
+```
+
 ```{r}
 library(ggplot2)
 library(scales) # needed for oob parameter
@@ -360,8 +367,7 @@ library(viridis)
 ```{r}
 library(reshape2)
 # First compare wide vs long version
-deseq2VST_wide <- df_heat_2
-de2 <- melt(df_heat, id.vars=c(df_heat$gene))
+de2 <- melt(df_heat_2, id.vars="gene")
 ```
 
 ```{r}
