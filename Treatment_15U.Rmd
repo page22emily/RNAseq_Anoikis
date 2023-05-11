@@ -348,14 +348,7 @@ df_tokeep <- df[df$gene %in% siggenes, ]
 ```
 
 ```{r}
-df_heat <- df_tokeep[ , c(8:11, 20:22, 29:31)]
-```
-
-```{r}
-df_heat[df_heat == "NaN"] <- NA
-df_heat[df_heat == "Inf"] <- NA
-df_heat[df_heat == "-Inf"] <- NA
-df_heat_2 <- na.omit(df_heat)
+df_heat <- df_tokeep[ , c(8:10, 20:22, 29:31,11)]
 ```
 
 ```{r}
@@ -368,7 +361,7 @@ library(viridis)
 library(reshape2)
 # First compare wide vs long version
 deseq2VST_wide <- df_heat_2
-de2 <- melt(df_heat_2, id.vars=c("gene"))
+de2 <- melt(df_heat, id.vars=c(df_heat$gene))
 ```
 
 ```{r}
