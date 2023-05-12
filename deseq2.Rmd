@@ -21,7 +21,7 @@ This is for setting up the meta data and DESeq2 object so that you can do your a
 
 The only meta data I am adding here is time point 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
-sample_meta_data <- read.csv(file= "~/Documents/Mythreye_Lab/Mehri_Resha/anoikis/meta_data_anoikis.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
+sample_meta_data <- read.csv(file= "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/meta_data_anoikis.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
 sampleCondition <- sample_meta_data$Time_Point #this one you can change to whatever column you want in your meta data for comparisons 
 sampleTable <- data.frame(sampleName = sample_meta_data$Sample,
                           fileName = sample_meta_data$Sample,
@@ -30,7 +30,7 @@ sampleTable$condition <- factor(sampleTable$condition)
 ```
 
 ```{r}
-data <- read.csv("~/Documents/Mythreye_Lab/Mehri_Resha/anoikis/raw_counts_edited.csv")
+data <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/raw_counts_edited.csv")
 gene <- as.data.frame(data$GeneID)
 countDataMatrix <- as.matrix(data[ ,-1])
 rownames(countDataMatrix) <- data[,1]
@@ -63,6 +63,12 @@ Here is an example template. There's a # in front of it so that it is not runnin
 res_2 <- results(dds, contrast=c("condition","1","7"))
 
 write.csv(res_2,"~/Desktop/P1_vs_P7.csv")
+```
+
+```{r}
+res_4 <- results(dds, contrast=c("condition","0","6.6"))
+
+write.csv(res_4,"~/Desktop/P0_vs_P6.csv")
 ```
 
 
