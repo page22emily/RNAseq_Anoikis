@@ -66,9 +66,9 @@ write.csv(res_2,"~/Desktop/P1_vs_P7.csv")
 ```
 
 ```{r}
-res_4 <- results(dds, contrast=c("condition","0","6.6"))
+res_4 <- results(dds, contrast=c("condition","6.6","0"))
 
-write.csv(res_4,"~/Desktop/P0_vs_P6.csv")
+write.csv(res_4,"~/Desktop/P6_vs_P0.csv")
 ```
 
 
