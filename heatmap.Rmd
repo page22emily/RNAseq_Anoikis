@@ -107,11 +107,11 @@ df$P01 <- counts_P1$One
 df$P02 <- counts_P1$two
 df$P03 <- counts_P1$three
 df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
-df$LFC_1 <- foldchange2logratio(df$LC_1, base = 2)
+df$P1A <- foldchange2logratio(df$LC_1, base = 2)
 df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
-df$LFC_2 <- foldchange2logratio(df$LC_2, base = 2)
+df$P1B<- foldchange2logratio(df$LC_2, base = 2)
 df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
-df$LFC_3 <- foldchange2logratio(df$LC_3, base = 2)
+df$P1C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
 ```{r}
@@ -152,11 +152,11 @@ df$P01 <- counts_P4$One
 df$P02 <- counts_P4$two
 df$P03 <- counts_P4$three
 df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
-df$LFC_41 <- foldchange2logratio(df$LC_1, base = 2)
+df$P4A <- foldchange2logratio(df$LC_1, base = 2)
 df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
-df$LFC_42 <- foldchange2logratio(df$LC_2, base = 2)
+df$P4B <- foldchange2logratio(df$LC_2, base = 2)
 df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
-df$LFC_43 <- foldchange2logratio(df$LC_3, base = 2)
+df$P4C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
 ```{r}
@@ -198,11 +198,11 @@ df$P01 <- counts_P6$One
 df$P02 <- counts_P6$two
 df$P03 <- counts_P6$three
 df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
-df$LFC_61 <- foldchange2logratio(df$LC_1, base = 2)
+df$P6A <- foldchange2logratio(df$LC_1, base = 2)
 df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
-df$LFC_62 <- foldchange2logratio(df$LC_2, base = 2)
+df$P6B <- foldchange2logratio(df$LC_2, base = 2)
 df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
-df$LFC_63 <- foldchange2logratio(df$LC_3, base = 2)
+df$P6C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
 ```{r}
@@ -214,7 +214,7 @@ df_tokeep <- df[df$gene %in% sigGenes, ]
 ```
 
 ```{r}
-df_heat <- df_tokeep[ , 11:14]
+df_heat <- df_tokeep[ , c(6,8,10,11)]
 ```
 
 ```{r}
@@ -244,11 +244,11 @@ df$P01 <- counts_P7$One
 df$P02 <- counts_P7$two
 df$P03 <- counts_P7$three
 df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
-df$LFC_71 <- foldchange2logratio(df$LC_1, base = 2)
+df$P7A <- foldchange2logratio(df$LC_1, base = 2)
 df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
-df$LFC_72 <- foldchange2logratio(df$LC_2, base = 2)
+df$P7B <- foldchange2logratio(df$LC_2, base = 2)
 df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
-df$LFC_73 <- foldchange2logratio(df$LC_3, base = 2)
+df$P7C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
 ```{r}
@@ -283,8 +283,8 @@ combined <- rbind(de2, de22, de23, de24)
 ```
 
 ```{r}
-heatmap <- ggplot(combined, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + aes(y = reorder(gene, value))
-heatmap
+heatmap <- ggplot(combined, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + aes(y = reorder(gene, value)) + xlab("Passage Number") + ylab("Gene")
+heatmap 
 ```
 
 ```{r}
