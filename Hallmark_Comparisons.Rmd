@@ -18,14 +18,15 @@ Correlation between OV90 and CAOV3 DEGS driving the hallmarks?
 Correlation between OV90 and CAOV3 hallmarks? with leading edge or enrichment score? 
 
 Set Up: 
+/Users/emilypage/Documents/Mythreye_Lab/anoikis/Hallmarks
 
 OV90
 ```{r}
-OV90TP01 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
-OV90TP04 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_4_1k_perm_pval_1_cutoff_BH.csv")
-OV90TP06 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
-OV90TP07 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
-OV90TP17 <- read.csv("~/Desktop/Hallmarks/Hallmarks_OV90/OV90_gse_1_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP01 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP04 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_4_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP06 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP07 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_OV90/OV90_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+OV90TP17 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_OV90/OV90_gse_1_vs_7_1k_perm_pval_1_cutoff_BH.csv")
 ```
 
 ```{r}
@@ -50,10 +51,10 @@ OV90_enrich$P1_vs_P7_p_val <- OV90TP17$p.adjust
 
 CAOV3
 ```{r}
-CAOV3TP01 <- read.csv("~/Desktop/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
-CAOV3TP06 <- read.csv("~/Desktop/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
-CAOV3TP07 <- read.csv("~/Desktop/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
-CAOV3TP17 <- read.csv("~/Desktop/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_1_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP01 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_1_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP06 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_6_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP07 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_0_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+CAOV3TP17 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Hallmarks/Hallmarks_CAOV3/CAOV3_gse_1_vs_7_1k_perm_pval_1_cutoff_BH.csv")
 CAOV3TP01 <- CAOV3TP01[order(CAOV3TP01$X),]
 CAOV3TP06 <- CAOV3TP06[order(CAOV3TP06$X),]
 CAOV3TP07 <- CAOV3TP07[order(CAOV3TP07$X),]
@@ -182,37 +183,55 @@ ggsave( "~/Desktop/CAOV3_sign_Hallmarks.tiff", plot = last_plot())
 P0_P6_combined <- as.data.frame(OV90_enrich$`OV90TP01$X`)
 P0_P6_combined$OV90 <- OV90_enrich$P0_vs_P6_enrich
 P0_P6_combined$CAOV3 <- CAOV3_enrich$P0_vs_P6_enrich
-```
-
-
-```{r}
-OV90 <- P0_P6_combined$OV90
-CAOV3 <- P0_P6_combined$CAOV3
-tiff("~/Desktop/correlation_P0_vs_P6_OV90_CAOV3.tiff")
-plot(OV90, CAOV3, pch = 19, col = "black")
-dev.off()
+colnames(P0_P6_combined) <- c("Hallmarks", "OV90", "CAOV3")
 ```
 
 ```{r}
-# Pearson correlation
-cor(OV90, CAOV3, method= "pearson")
+Three <- P0_P6_combined
+ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=factor(Hallmarks), col=factor(Hallmarks))) + geom_point(alpha = 0.5, size=14, stroke=1.4) + scale_shape_manual(values=rep(c(21:25), times=10)) + geom_vline(xintercept = 0, 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) 
+ggsave("~/Desktop/P0_P6_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in")
+```
+```{r}
+P0_P1_combined <- as.data.frame(OV90_enrich$`OV90TP01$X`)
+P0_P1_combined$OV90 <- OV90_enrich$P0_vs_P1_enrich
+P0_P1_combined$CAOV3 <- CAOV3_enrich$P0_vs_P1_enrich
+colnames(P0_P1_combined) <- c("Hallmarks", "OV90", "CAOV3")
 ```
 
+```{r}
+Three <- P0_P1_combined
+ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=factor(Hallmarks), col=factor(Hallmarks))) + geom_point(alpha = 0.5, size=14, stroke=1.4) + scale_shape_manual(values=rep(c(21:25), times=10)) + geom_vline(xintercept = 0, 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) 
+ggsave("~/Desktop/P0_P1_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in")
+```
 ```{r}
 P1_P7_combined <- as.data.frame(OV90_enrich$`OV90TP01$X`)
 P1_P7_combined$OV90 <- OV90_enrich$P1_vs_P7_enrich
 P1_P7_combined$CAOV3 <- CAOV3_enrich$P1_vs_P7_p_enrich
+colnames(P1_P7_combined) <- c("Hallmarks", "OV90", "CAOV3")
 ```
 
 ```{r}
-OV90 <- P1_P7_combined$OV90
-CAOV3 <- P1_P7_combined$CAOV3
-tiff("~/Desktop/correlation_P1_P7_OV90_CAOV3.tiff")
-plot(OV90, CAOV3, pch = 19, col = "black")
-dev.off()
+Three <- P1_P7_combined
+ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=factor(Hallmarks), col=factor(Hallmarks))) + geom_point(alpha = 0.5, size=14, stroke=1.4) + scale_shape_manual(values=rep(c(21:25), times=10)) + geom_vline(xintercept = 0, 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) 
+ggsave("~/Desktop/P1_P7_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in")
 ```
+
 ```{r}
-write.csv(P0_P6_combined, "~/Desktop/P0_P6_combined_OV90_CAOV3_Hallmarks.csv")
-write.csv(P1_P7_combined, "~/Desktop/P1_P7_combined_OV90_CAOV3_Hallmarks.csv")
+P0_P7_combined <- as.data.frame(OV90_enrich$`OV90TP01$X`)
+P0_P7_combined$OV90 <- OV90_enrich$P0_vs_P7_enrich
+P0_P7_combined$CAOV3 <- CAOV3_enrich$P0_vs_P7_enrich
+colnames(P0_P7_combined) <- c("Hallmarks", "OV90", "CAOV3")
 ```
+
+```{r}
+Three <- P0_P7_combined
+ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=factor(Hallmarks), col=factor(Hallmarks))) + geom_point(alpha = 0.5, size=14, stroke=1.4) + scale_shape_manual(values=rep(c(21:25), times=10)) + geom_vline(xintercept = 0, 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) 
+ggsave("~/Desktop/P0_P7_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in") 
+```
+
+
 
