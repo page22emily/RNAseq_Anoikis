@@ -51,7 +51,7 @@ m_t2g <- msigdbr(species = "Homo sapiens", category = "H") %>%
 #this is from the first go round
 ```{r echo=FALSE, message= FALSE, warning= FALSE}
 # reading in data from deseq2
-df = read.csv("~/Desktop/P1_vs_P7.csv", header=TRUE)
+df = read.csv("~/Desktop/OV90_Outputs/P7_vs_P0.csv", header=TRUE)
 # we want the log2 fold change 
 original_gene_list <- df$log2FoldChange
 
@@ -85,7 +85,7 @@ gse <- GSEA(gene_list,  minGSSize = 15,
 Extract the data we need 
 ```{r}
 gse_res <- gse@result
-write.csv(gse_res, "~/Desktop/OV90_gse_1_vs_7_1k_perm_pval_1_cutoff_BH.csv")
+write.csv(gse_res, "~/Desktop/OV90_gse_7_vs_1_1k_perm_pval_1_cutoff_BH.csv")
 ```
 Adjusting for Min, Max, and Permutations to be the same as GSEA software 
 Min Size: 15, Max Size 500, Permutations 1000 and no p adj method 
