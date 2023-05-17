@@ -21,11 +21,12 @@ library(gtools)
 ```
 
 Need to download the data in 
+~/Desktop/OV90_Outputs/DESeq2
 ```{r}
-P0_P1 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/resLFC1_5_0vs1.csv")
-P0_P4 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/resLFC1_5_0vs4.csv")
-P0_P6 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/resLFC1_5_0vs6.csv")
-P0_P7 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/resLFC1_5_0vs7.csv")
+P0_P1 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P1_vs_P0.csv")
+P0_P4 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P4_vs_P0.csv")
+P0_P6 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P6_vs_P0.csv")
+P0_P7 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P7_vs_P0.csv")
 ```
 
 ```{r}
@@ -128,7 +129,7 @@ df_heat <- df_tokeep[ , c(6,8,10,11)]
 
 ```{r}
 # First compare wide vs long version
-deseq2VST_wide <- df_heat
+deseq2VST_wide1 <- df_heat
 de2 <- melt(df_heat, id.vars=c("gene"))
 ```
 
@@ -173,7 +174,7 @@ df_heat <- df_tokeep[ , c(6,8,10,11)]
 
 ```{r}
 # First compare wide vs long version
-deseq2VST_wide <- df_heat
+deseq2VST_wide4 <- df_heat
 de22 <- melt(df_heat, id.vars=c("gene"))
 ```
 
@@ -219,7 +220,7 @@ df_heat <- df_tokeep[ , c(6,8,10,11)]
 
 ```{r}
 # First compare wide vs long version
-deseq2VST_wide <- df_heat
+deseq2VST_wide6 <- df_heat
 de23 <- melt(df_heat, id.vars=c("gene"))
 ```
 
@@ -265,7 +266,7 @@ df_heat <- df_tokeep[ , c(6,8,10,11)]
 
 ```{r}
 # First compare wide vs long version
-deseq2VST_wide <- df_heat
+deseq2VST_wide7 <- df_heat
 de24 <- melt(df_heat, id.vars=c("gene"))
 ```
 
@@ -292,10 +293,35 @@ ggsave("~/Desktop/OV90_separated_heatmap_multiple_tp.png", plot = last_plot(), w
 ```
 
 ```{r}
-library(ComplexHeatmap)
-Heatmap(combined, 
-        name = "L2FC", #title of legend
-        column_title = "Passage Number", row_title = "Genes",
-        row_names_gp = gpar(fontsize = 7) # Text size for row names
-        )
+combined1 <- merge(deseq2VST_wide1, deseq2VST_wide4, all.x=TRUE, all= TRUE)
+combined2 <- merge(combined1, deseq2VST_wide6, all.x=TRUE, all= TRUE)
+combined <- merge(combined2, deseq2VST_wide7, all.x=TRUE, all= TRUE)
 ```
+
+```{r}
+write.csv(combined, "~/Desktop/combined.csv")
+```
+
+```{r}
+library(readr)
+combined_redo <- read_csv("~/Desktop/combined.csv", 
+    col_types = cols(...1 = col_number(), 
+        gene = col_number(), P1A = col_number(), 
+        P1B = col_number(), P1C = col_number(), 
+        P4A = col_number(), P4B = col_number(), P4C = col_number(), P6A = col_number(), P6B = col_number(), P6C = col_number(),P7A = col_number(), P7B = col_number(), P7C = col_number()))
+mat <- combined_redo[  , -2]
+```
+
+```{r}
+mat_num2<- na.omit(mat)
+mat_num3 <- as.matrix(mat_num2)
+```
+
+```{r}
+library(RColorBrewer)
+library(gplots)
+mat_num4 <- mat_num3[ , -1]
+coul <- brewer.pal(3, "RdBu") 
+heatmap(mat_num4, Colv= NA, col= couls)
+```
+
