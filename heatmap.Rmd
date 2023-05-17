@@ -290,3 +290,12 @@ heatmap
 ```{r}
 ggsave("~/Desktop/OV90_separated_heatmap_multiple_tp.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
 ```
+
+```{r}
+library(ComplexHeatmap)
+Heatmap(combined, 
+        name = "L2FC", #title of legend
+        column_title = "Passage Number", row_title = "Genes",
+        row_names_gp = gpar(fontsize = 7) # Text size for row names
+        )
+```

@@ -21,77 +21,140 @@ Bar Graph showing all 3 for each comparison group
 Table showing the percentage of genes in each category 
 Files for this are labeled as Comparison Group_Gene_Annotation
 Column of interest will be labeled as Group
+~/Desktop/OV90_Outputs/DESeq2
 ```{r}
-P0_vs_P1 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/Gene comparison/P1_vs_P0_Gene_Annotation.csv")
-P0_vs_P4 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/Gene comparison/P4_vs_P0_Gene_Annotation.csv")
-P0_vs_P7 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/Gene comparison/P7_vs_P0_Gene_Annotation.csv")
-P0_vs_P6 <- read.csv("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/Gene comparison/P6_vs_P0_Gene_Annotation.csv")
+P0_vs_P1 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P1_vs_P0.csv")
+P0_vs_P4 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P4_vs_P0.csv")
+P0_vs_P7 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P7_vs_P0.csv")
+P0_vs_P6 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P6_vs_P0.csv")
+
+no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P1$X)
+P0_vs_P1$X <- no_decimals
+no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P4$X)
+P0_vs_P4$X <- no_decimals
+no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P6$X)
+P0_vs_P6$X <- no_decimals
+no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P7$X)
+P0_vs_P7$X <- no_decimals
+```
+
+those are the raw files. we need to make the only significant ones present 
+```{r}
+P0_P1_adj <- na.omit(P0_vs_P1)
+P0_P4_adj <- na.omit(P0_vs_P4)
+P0_P7_adj <- na.omit(P0_vs_P7)
+P0_P6_adj <- na.omit(P0_vs_P6)
 ```
 
 ```{r}
-x <- list(P0_vs_P1= P0_vs_P1,P0_vs_P4= P0_vs_P4,P0_vs_P7= P0_vs_P7, P0_vs_P6= P0_vs_P6)
-level_order <- c("No Change", "Down Regulated", "Up Regulated")
-#for the actual bar graph itself 
-library(ggplot2)
-ggplot() +
-  geom_bar(data = P0_vs_P1, mapping = aes(x= Group, group =Group, fill = Group), position = "dodge") + xlab("P0 vs P1") + ylab("Total Number of Genes")  
+P0_P1_adj2 <- P0_P1_adj[P0_P1_adj$padj <= .05, ]
+P0_P4_adj2 <- P0_P4_adj[P0_P4_adj$padj <= .05, ]
+P0_P7_adj2 <- P0_P7_adj[P0_P7_adj$padj <= .05, ]
+P0_P6_adj2 <- P0_P6_adj[P0_P6_adj$padj <= .05, ]
 ```
 
 ```{r}
-#for the actual bar graph itself 
-ggplot() +
-  geom_bar(data = P0_vs_P4, mapping = aes(x= Group, group =Group, fill = Group), position = "dodge") + xlab("P0 vs P4") + ylab("Total Number of Genes") 
-```
-```{r}
-no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P1$gene_id)
-#now we are going to add this to the df 
-P0_vs_P1$gene_id <- no_decimals
-no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P4$gene_id)
-#now we are going to add this to the df 
-P0_vs_P4$gene_id <- no_decimals
-gene_list <- c(P0_vs_P1$gene_id, P0_vs_P4$gene_id, P0_vs_P6$X, P0_vs_P7$x)
+library(dplyr)
+library(tibble)
+# Adding column based on other column:
+P0_P1_Annotations <- add_column(P0_P1_adj2 %>%
+  mutate(Gene_Annotation = case_when(log2FoldChange <= -1.5 ~ "Down Regulated", log2FoldChange >= 1.5 ~ "Up Regulated", between(log2FoldChange, -1.5 , 1.5) ~ "No Change")))
 ```
 
 ```{r}
-P1 <- P0_vs_P1[ , c(1,6)]
-P4 <- P0_vs_P4[ , c(1,6)]
-P6 <- P0_vs_P6[ , c(1,4)]
-P7 <- P0_vs_P7[ , c(2,7)]
-colnames(P1) <- c("gene_id", "P1")
-colnames(P4) <- c("gene_id", "P4")
-colnames(P6) <- c("gene_id", "P6")
-colnames(P7) <- c("gene_id", "P7")
+P0_P1_Annotations <- add_column(P0_P1_Annotations %>%
+  mutate(Down = if_else(log2FoldChange <= -1.5, TRUE, FALSE), .after="Gene_Annotation"))
+P0_P1_Annotations <- add_column(P0_P1_Annotations %>%
+  mutate(Up = if_else( log2FoldChange >= 1.5, TRUE, FALSE), .after="Down"))
+P0_P1_Annotations <- add_column(P0_P1_Annotations %>%
+  mutate(NC = if_else(between(log2FoldChange, -1.5 , 1.5), TRUE, FALSE), .after="Up"))
 ```
 
 ```{r}
-gene_list_2 <- merge(P1, P4, all.x=TRUE, all= TRUE)
+P0_P4_Annotations <- add_column(P0_P4_adj2 %>%
+  mutate(Gene_Annotation = case_when(log2FoldChange <= -1.5 ~ "Down Regulated", log2FoldChange >= 1.5 ~ "Up Regulated", between(log2FoldChange, -1.5 , 1.5) ~ "No Change")))
+P0_P4_Annotations <- add_column(P0_P4_Annotations %>%
+  mutate(Down = if_else(log2FoldChange <= -1.5, TRUE, FALSE), .after="Gene_Annotation"))
+P0_P4_Annotations <- add_column(P0_P4_Annotations %>%
+  mutate(Up = if_else( log2FoldChange >= 1.5, TRUE, FALSE), .after="Down"))
+P0_P4_Annotations <- add_column(P0_P4_Annotations %>%
+  mutate(NC = if_else(between(log2FoldChange, -1.5 , 1.5), TRUE, FALSE), .after="Up"))
 ```
 
 ```{r}
-gene_list_3 <- merge(gene_list_2, P6, all.x=TRUE, all= TRUE)
+P0_P6_Annotations <- add_column(P0_P6_adj2 %>%
+  mutate(Gene_Annotation = case_when(log2FoldChange <= -1.5 ~ "Down Regulated", log2FoldChange >= 1.5 ~ "Up Regulated", between(log2FoldChange, -1.5 , 1.5) ~ "No Change")))
+P0_P6_Annotations <- add_column(P0_P6_Annotations %>%
+  mutate(Down = if_else(log2FoldChange <= -1.5, TRUE, FALSE), .after="Gene_Annotation"))
+P0_P6_Annotations <- add_column(P0_P6_Annotations %>%
+  mutate(Up = if_else(log2FoldChange >= 1.5, TRUE, FALSE), .after="Down"))
+P0_P6_Annotations <- add_column(P0_P6_Annotations %>%
+  mutate(NC = if_else(between(log2FoldChange, -1.5 , 1.5), TRUE, FALSE), .after="Up"))
 ```
 
 ```{r}
-gene_list_4 <- merge(gene_list_3, P7, all.x=TRUE, all= TRUE)
+P0_P7_Annotations <- add_column(P0_P7_adj2 %>%
+  mutate(Gene_Annotation = case_when(log2FoldChange <= -1.5 ~ "Down Regulated", log2FoldChange >= 1.5 ~ "Up Regulated", between(log2FoldChange, -1.5 , 1.5) ~ "No Change")))
+P0_P7_Annotations <- add_column(P0_P7_Annotations %>%
+  mutate(Down = if_else(log2FoldChange <= -1.5, TRUE, FALSE), .after="Gene_Annotation"))
+P0_P7_Annotations <- add_column(P0_P7_Annotations %>%
+  mutate(Up = if_else(log2FoldChange >= 1.5, TRUE, FALSE), .after="Down"))
+P0_P7_Annotations <- add_column(P0_P7_Annotations %>%
+  mutate(NC = if_else(between(log2FoldChange, -1.5 , 1.5), TRUE, FALSE), .after="Up"))
+```
+
+
+```{r}
+P1_Up <- P0_P1_Annotations[ , c(1,10)]
+P1_Down <- P0_P1_Annotations[ , c(1,9)]
+P1_NC <- P0_P1_Annotations[ , c(1,11)]
+P4_Up <- P0_P4_Annotations[ , c(1,10)]
+P4_Down <- P0_P4_Annotations[ , c(1,9)]
+P4_NC <- P0_P4_Annotations[ , c(1,11)]
+P6_Up <- P0_P6_Annotations[ , c(1,10)]
+P6_Down <- P0_P6_Annotations[ , c(1,9)]
+P6_NC <- P0_P6_Annotations[ , c(1,11)]
+P7_Up <- P0_P7_Annotations[ , c(1,10)]
+P7_Down <- P0_P7_Annotations[ , c(1,9)]
+P7_NC <- P0_P7_Annotations[ , c(1,11)]
+colnames(P1_Up) <- c("gene_id", "P0_vs_P1")
+colnames(P1_Down) <- c("gene_id", "P0_vs_P1")
+colnames(P1_NC) <- c("gene_id", "P0_vs_P1")
+colnames(P4_Up) <- c("gene_id", "P0_vs_P4")
+colnames(P4_Down) <- c("gene_id", "P0_vs_P4")
+colnames(P4_NC) <- c("gene_id", "P0_vs_P4")
+colnames(P6_Up) <- c("gene_id", "P0_vs_P6")
+colnames(P6_Down) <- c("gene_id", "P0_vs_P6")
+colnames(P6_NC) <- c("gene_id", "P0_vs_P6")
+colnames(P7_Up) <- c("gene_id", "P0_vs_P7")
+colnames(P7_Down) <- c("gene_id", "P0_vs_P7")
+colnames(P7_NC) <- c("gene_id", "P0_vs_P7")
 ```
 
 ```{r}
-write.csv(gene_list_4, "~/Desktop/genelist.csv")
+Up_Genes1 <- merge(P1_Up, P4_Up, all.x=TRUE, all= TRUE)
+Up_Genes2 <- merge(Up_Genes1, P6_Up, all.x=TRUE, all= TRUE)
+Up_Genes<- merge(Up_Genes2, P7_Up, all.x=TRUE, all= TRUE)
 ```
 
 ```{r}
-#for the actual bar graph itself 
-ggplot() +
-  geom_bar(data = P0_vs_P7, mapping = aes(x= Group, group =Group, fill = Group), position = "dodge") + xlab("P0 vs P7") + ylab("Total Number of Genes") 
+Down_Genes1 <- merge(P1_Down, P4_Down, all.x=TRUE, all= TRUE)
+Down_Genes2 <- merge(Down_Genes1, P6_Down, all.x=TRUE, all= TRUE)
+Down_Genes<- merge(Down_Genes2, P7_Down, all.x=TRUE, all= TRUE)
 ```
 
-I went ahead and manually counted the individual points that are present above so it can be in one graph 
+```{r}
+NC_Genes1 <- merge(P1_NC, P4_NC, all.x=TRUE, all= TRUE)
+NC_Genes2 <- merge(NC_Genes1, P6_NC, all.x=TRUE, all= TRUE)
+NC_Genes<- merge(NC_Genes2, P7_NC, all.x=TRUE, all= TRUE)
+```
+
 ```{r}
 library(tidyr)
 #read in what we want 
-up <- read.csv("~/Desktop/genelist/Up.csv")
-down <- read.csv("~/Desktop/genelist/Down.csv")
-nc <- read.csv("~/Desktop/genelist/No_Change.csv")
+up <- Up_Genes
+down <- Down_Genes
+nc <- NC_Genes
 ```
 
 #The rest of Lara's figure is made with UpSet Figures 
@@ -109,14 +172,17 @@ Group
 
 ```{r}
 upset(up, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
+ggsave("~/Desktop/Up_OV90_fullset.png", last_plot())
 ```
 
 ```{r}
 upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Down Regulated Genes")
+ggsave("~/Desktop/Down_OV90_fullset.png", last_plot())
 ```
 
 ```{r}
 upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Genes with No Significant Change")
+ggsave("~/Desktop/NC_OV90_fullset.png", last_plot())
 ```
 
 ```{r}
@@ -126,11 +192,14 @@ Group
 
 ```{r}
 upset(up, Group, min_degree=1,sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
+ggsave("~/Desktop/Up_OV90_no_P4set.png", last_plot())
 ```
 
 ```{r}
 upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Down Regulated Genes")
+ggsave("~/Desktop/Down_OV90_no_P4set.png", last_plot())
 ```
 ```{r}
 upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Genes with No Significant Change")
+ggsave("~/Desktop/NC_OV90_no_P4set.png", last_plot())
 ```

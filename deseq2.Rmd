@@ -51,24 +51,36 @@ res <- results(dds)
 res
 ```
 
-This is to save the results so that you can look at them later/ comparisons for analysis 
-```{r}
-write.csv(res, "~/Desktop/results_anoikis.csv")
-```
-
-
 You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
 Here is an example template. There's a # in front of it so that it is not running 
 ```{r}
-res_2 <- results(dds, contrast=c("condition","1","7"))
+res_2 <- results(dds, contrast=c("condition","7","1"))
 
-write.csv(res_2,"~/Desktop/P1_vs_P7.csv")
+write.csv(res_2,"~/Desktop/P7_vs_P1.csv")
 ```
 
 ```{r}
 res_4 <- results(dds, contrast=c("condition","6.6","0"))
 
 write.csv(res_4,"~/Desktop/P6_vs_P0.csv")
+```
+
+```{r}
+res_4 <- results(dds, contrast=c("condition","1","0"))
+
+write.csv(res_4,"~/Desktop/P1_vs_P0.csv")
+```
+
+```{r}
+res_4 <- results(dds, contrast=c("condition","4","0"))
+
+write.csv(res_4,"~/Desktop/P4_vs_P0.csv")
+```
+
+```{r}
+res_4 <- results(dds, contrast=c("condition","7","0"))
+
+write.csv(res_4,"~/Desktop/P7_vs_P0.csv")
 ```
 
 

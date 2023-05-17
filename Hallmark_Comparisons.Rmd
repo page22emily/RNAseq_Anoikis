@@ -191,7 +191,7 @@ colnames(P0_P6_combined) <- c("Hallmarks", "OV90", "CAOV3")
 ```{r}
 Three <- P0_P6_combined
 ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=factor(Hallmarks), col=factor(Hallmarks))) + geom_point(alpha = 0.5, size=14, stroke=1.4) + scale_shape_manual(values=rep(c(21:25), times=10)) + geom_vline(xintercept = 0, 
-                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(2.5, 'cm'), legend.text = element_text(size=25), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(2.5, 'cm'), legend.text = element_text(size=25), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
 ggsave("~/Desktop/P0_P6_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in")
 ```
 ```{r}
@@ -204,7 +204,7 @@ colnames(P0_P1_combined) <- c("Hallmarks", "OV90", "CAOV3")
 ```{r}
 Three <- P0_P1_combined
 ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=factor(Hallmarks), col=factor(Hallmarks))) + geom_point(alpha = 0.5, size=14, stroke=1.4) + scale_shape_manual(values=rep(c(21:25), times=10)) + geom_vline(xintercept = 0, 
-                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
 ggsave("~/Desktop/P0_P1_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in")
 ```
 ```{r}
@@ -217,7 +217,7 @@ colnames(P1_P7_combined) <- c("Hallmarks", "OV90", "CAOV3")
 ```{r}
 Three <- P1_P7_combined
 ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=factor(Hallmarks), col=factor(Hallmarks))) + geom_point(alpha = 0.5, size=14, stroke=1.4) + scale_shape_manual(values=rep(c(21:25), times=10)) + geom_vline(xintercept = 0, 
-                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
 ggsave("~/Desktop/P1_P7_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in")
 ```
 
@@ -231,7 +231,7 @@ colnames(P0_P7_combined) <- c("Hallmarks", "OV90", "CAOV3")
 ```{r}
 Three <- P0_P7_combined
 ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=factor(Hallmarks), col=factor(Hallmarks))) + geom_point(alpha = 0.5, size=14, stroke=1.4) + scale_shape_manual(values=rep(c(21:25), times=10)) + geom_vline(xintercept = 0, 
-                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
 ggsave("~/Desktop/P0_P7_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in") 
 ```
 
