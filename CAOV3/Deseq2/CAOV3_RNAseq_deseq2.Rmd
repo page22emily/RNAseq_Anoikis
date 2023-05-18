@@ -1,0 +1,166 @@
+---
+title: "RNASeq"
+output: html_document
+date: "2023-01-06"
+---
+This is the step to "call" all of the packages you need and just installed. 
+The function is called "library"
+This step occurs as new packages are used throughout this code. 
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+library(tximport)
+library(GenomicFeatures)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(DESeq2)
+```
+
+The files in this next step can be found in a zip folder on Github called
+
+These next steps are for tximport so that we can get the counts in the right format for DESeq2 
+USE THIS FOR WHEN YOU HAVE INPUT FROM SALMON OR STAR 
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+#This is for tutorial purposes as well as if the txdb has already been made 
+txdb <- loadDb("~/Tutorials/RNAseq/gencode.v19.annotation.gtf_withproteinids.TxDb")
+k <- keys(txdb, keytype = "TXNAME")
+tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+```
+
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dir <- "~/Documents/Mythreye_Lab/quants_CAOV3_k31/"  #this is a path that you will change. This is the quants folder from Salmon that should be locally on your computer 
+samples <- read.csv(file= "~/Documents/Mythreye_Lab/anoikis/CAOV3/meta_CAOV3.csv") #CSV is a metadata file. A sample of this file is on github 
+files <- file.path(dir, samples$Sample, "quant.sf")
+all(file.exists(files))
+```
+
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txi <- tximport(files, type = "salmon", tx2gene= tx2gene, ignoreAfterBar= TRUE)
+names(txi)
+```
+
+
+This is for setting up the meta data and DESeq2 object so that you can do your analysis 
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+sample_meta_data <- read.csv(file= "~/Documents/Mythreye_Lab/anoikis/CAOV3/meta_CAOV3.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
+sampleFiles <- samples$Sample
+sampleCondition <- sample_meta_data$Time_Point #this one you can change to whatever column you want in your meta data for comparisons 
+sampleTable <- data.frame(sampleName = sampleFiles,
+                          fileName = sampleFiles,
+                          condition = sampleCondition)
+sampleTable$condition <- factor(sampleTable$condition)
+```
+
+
+```{r echo=FALSE}
+colnames(txi$counts) <- rownames(sampleTable)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeqDataSetFromTximport(txi, sampleTable, ~condition)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeq(dds)
+```
+
+```{r}
+counts <- counts(dds[ , ], normalized = TRUE)
+write.csv(counts, "~/Documents/Mythreye_Lab/anoikis/CAOV3/results/counts_CAOV3.csv")
+```
+
+This is going to tell you information about the results from running DESeq2 
+```{r}
+res <- results(dds, contrast=c("condition","7","0"))
+res
+```
+
+This is to save the results so that you can look at them later/ comparisons for analysis 
+```{r}
+write.csv(res, "~/Desktop/results_7_vs_0_CAOV3.csv")
+```
+
+
+You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
+Here is an example template. There's a # in front of it so that it is not running 
+```{r}
+res_0_vs_1 <- results(dds, contrast=c("condition","1","0"))
+write.csv(res_0_vs_1, "~/Desktop/results_1_vs_0_CAOV3.csv")
+res_0_vs_6 <- results(dds, contrast=c("condition","6","0"))
+write.csv(res_0_vs_6, "~/Desktop/results_6_vs_0_CAOV3.csv")
+res_1_vs_7 <- results(dds, contrast=c("condition","7","1"))
+write.csv(res_0_vs_6, "~/Desktop/results_7_vs_1_CAOV3.csv")
+```
+
+```{r echo=FALSE}
+resOrdered <- res[order(res$pvalue),]
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res)
+```
+
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+Now you can start going through the plot functions and seeing what the data actually looks like 
+```{r echo=FALSE}
+plotMA(res, ylim=c(-2,2))
+```
+
+```{r echo=FALSE}
+plotMA(res05, ylim=c(-2,2))
+```
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+```
+
+```{r}
+rld <- rlog(dds, blind=FALSE)
+```
+
+```{r}
+ntd <- normTransform(dds)
+```
+
+```{r}
+library("vsn")
+meanSdPlot(assay(ntd))
+```
+
+```{r}
+meanSdPlot(assay(vsd))
+```
+
+```{r}
+sampleDists <- dist(t(assay(vsd)))
+```
+
+```{r}
+library("RColorBrewer")
+library("pheatmap")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$condition)
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors, annRow= vsd$condition)
+```
+
+```{r}
+plotPCA(vsd, intgroup=c("condition"))
+```
+
+```{r}
+plotDispEsts(dds)
+```
+
+
+
+

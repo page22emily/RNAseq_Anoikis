@@ -1,0 +1,115 @@
+---
+title: "Hallmarks_0_vs_6"
+output: html_document
+date: "2023-01-17"
+---
+
+Set up (from the Vignette)
+```{r echo=FALSE, message= FALSE, warning= FALSE}
+library("msigdbr")
+library(clusterProfiler)
+library(enrichplot)
+# we use ggplot2 to add x axis labels (ex: ridgeplot)
+library(ggplot2)
+library(cowplot)
+# SET THE DESIRED ORGANISM HERE
+organism = "org.Hs.eg.db"
+#BiocManager::install(organism, character.only = TRUE)
+library(organism, character.only = TRUE)
+```
+
+```{r echo=FALSE, message= FALSE, warning= FALSE}
+#to get the gene set that we want
+#in this particular setting we want the H genes, which are Hallmark genes 
+h_gene_sets = msigdbr(species = "Homo sapiens", category = "H")
+```
+
+```{r echo=FALSE, message= FALSE, warning= FALSE}
+m_t2g <- msigdbr(species = "Homo sapiens", category = "H") %>% 
+  dplyr::select(gs_name, ensembl_gene)
+```
+
+#this is from the first go round
+```{r echo=FALSE, message= FALSE, warning= FALSE}
+# reading in data from deseq2
+df = read.csv("~/Desktop/CAOV3_Outputs/results_6_vs_0_CAOV3.csv", header=TRUE)
+# we want the log2 fold change 
+original_gene_list <- df$log2FoldChange
+#list needs no decimal points
+no_decimals <- gsub('\\.[0-9]*$','', df$X)
+#now we are going to add this to the df 
+df$no_decimals <- no_decimals
+# name the vector
+names(original_gene_list) <- df$no_decimals
+# omit any NA values
+gene_list<-na.omit(original_gene_list)
+# sort the list in decreasing order (required for clusterProfiler)
+gene_list = sort(gene_list, decreasing = TRUE)
+gene.list <- data.frame(gene_list)
+```
+
+```{r echo=FALSE, message= FALSE, warning= FALSE}
+em <- enricher(df$no_decimals, TERM2GENE=m_t2g)
+```
+
+```{r}
+gse <- GSEA(gene_list,  minGSSize = 15, 
+             maxGSSize = 500, 
+             nPermSimple= 1000,
+             pvalueCutoff = 1, 
+             verbose = TRUE, 
+             pAdjustMethod = "BH", TERM2GENE= m_t2g)
+```
+
+```{r}
+gse_res <- gse@result
+write.csv(gse_res, "~/Desktop/CAOV3_gse_6_vs_0_1k_perm_pval_1_cutoff_BH.csv")
+```
+Adjusting for Min, Max, and Permutations to be the same as GSEA software 
+Min Size: 15, Max Size 500, Permutations 1000 and no p adj method 
+
+```{r}
+require(DOSE)
+dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign) + theme(axis.text.y = element_text(size = 4)) 
+```
+
+```{r}
+require(DOSE)
+dotplot(gse, showCategory=20, split=".sign") + facet_grid(.~.sign) + theme(axis.text.y = element_text(size = 4)) 
+```
+
+```{r}
+gse<-pairwise_termsim(gse, method = "JC", semData = NULL, showCategory = 200)
+emapplot(gse, showCategory = 15)  
+```
+
+```{r, out.width="50%"}
+# categorySize can be either 'pvalue' or 'geneNum'
+cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 10, node_label= "category", cex_label_category=0.5)
+```
+
+```{r}
+cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 20,  node_label= "category", cex_label_category=0.5)
+```
+
+```{r, out.width="50%"}
+ridgeplot(gse) + labs(x = "enrichment distribution") + theme(axis.text.y = element_text(size = 5)) 
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P1 <- gseaplot(gse, y = "all", title = gse$Description[1], geneSetID = 1)
+P1
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P2 <- gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
+P2
+```
+
+```{r}
+# Use the `Gene Set` param for the index in the title, and as the value for geneSetId
+P3<- gseaplot(gse, by = "all", title = gse$Description[3], geneSetID = 3)
+P3
+```

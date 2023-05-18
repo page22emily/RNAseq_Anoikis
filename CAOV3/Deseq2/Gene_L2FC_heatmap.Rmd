@@ -1,0 +1,265 @@
+---
+title: "Heatmaps"
+output: html_document
+date: "2023-05-12"
+---
+
+Making new heatmaps with L2FC 
+Comparisons by Group 
+P0 vs P7
+P0 vs P6
+P0 vs P1 
+Red Blue Color Scheme 
+
+```{r}
+library(tidyr)
+library(ggplot2)
+library(scales) # needed for oob parameter
+library(viridis)
+library(reshape2)
+library(data.table)
+library(gtools)
+```
+
+Need to download the data in 
+```{r}
+P0_P1 <- read.csv("~/Documents/Mythreye_Lab/anoikis/CAOV3/results/results_0_vs_1_CAOV3.csv")
+P0_P6 <- read.csv("~/Documents/Mythreye_Lab/anoikis/CAOV3/results/results_0_vs_6_CAOV3.csv")
+P0_P7 <- read.csv("~/Documents/Mythreye_Lab/anoikis/CAOV3/results/results_0_vs_7_CAOV3.csv")
+counts <- read.csv("~/Documents/Mythreye_Lab/anoikis/CAOV3/results/counts_CAOV3.csv")
+```
+
+```{r}
+P0_P1_adj <- na.omit(P0_P1)
+P0_P6_adj <- na.omit(P0_P6)
+P0_P7_adj <- na.omit(P0_P7)
+```
+
+```{r}
+P0_P1_adj2 <- P0_P1_adj[P0_P1_adj$padj <= .05 & P0_P1_adj$log2FoldChange >= 1.5, ]
+P0_P1_adj3 <- P0_P1_adj[P0_P1_adj$padj <= .05 & P0_P1_adj$log2FoldChange <= -1.5, ]
+
+P0_P6_adj2 <- P0_P6_adj[P0_P6_adj$padj <= .05 & P0_P6_adj$log2FoldChange >= 1.5, ]
+P0_P6_adj3 <- P0_P6_adj[P0_P6_adj$padj <= .05 & P0_P6_adj$log2FoldChange <= -1.5, ]
+
+P0_P7_adj2 <- P0_P7_adj[P0_P7_adj$padj <= .05 & P0_P7_adj$log2FoldChange >= 1.5, ]
+P0_P7_adj3 <- P0_P7_adj[P0_P7_adj$padj <= .05 & P0_P7_adj$log2FoldChange <= -1.5, ]
+```
+
+So now we have a data frame for each up and down regulated set in each seq data set 
+Now, we want to combine these and use the information to make a heatmap. 
+
+```{r}
+sigGenes <- as.list(c(P0_P1_adj2$X, P0_P1_adj3$X, P0_P7_adj2$X, P0_P7_adj3$X, P0_P6_adj2$X, P0_P6_adj3$X))
+```
+
+```{r}
+counts_P0 <- counts[ , 2:4]
+rownames(counts_P0) <- counts$X
+colnames(counts_P0) <- c("One", "two", "three")
+counts_P0 <- as.data.frame(counts_P0)
+counts_P0_average <- rowMeans(counts_P0)
+```
+
+```{r}
+counts_P1 <- counts[ , 5:7]
+rownames(counts_P1) <- counts$X
+colnames(counts_P1) <- c("One", "two", "three")
+counts_P1 <- as.data.frame(counts_P1)
+counts_P1_averages <- rowMeans(counts_P1)
+```
+
+```{r}
+counts_P6 <- counts[ , 8:10]
+rownames(counts_P6) <- counts$X
+colnames(counts_P6) <- c("One", "two", "three")
+counts_P6 <- as.data.frame(counts_P6)
+counts_P6_averages <- rowMeans(counts_P6)
+```
+
+```{r}
+counts_P7 <- counts[ , 11:13]
+rownames(counts_P7) <- counts$X
+colnames(counts_P7) <- c("One", "two", "three")
+counts_P7 <- as.data.frame(counts_P7)
+counts_P7_average<- rowMeans(counts_P7)
+```
+
+```{r}
+df <- data.frame(counts_P0_average)
+```
+
+```{r}
+df$P01 <- counts_P1$One
+df$P02 <- counts_P1$two
+df$P03 <- counts_P1$three
+df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
+df$P1A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
+df$P1B <- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
+df$P1C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide1 <- df_heat
+de2 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+heatmap <- ggplot(de2, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+heatmap
+```
+
+```{r}
+ggsave("~/Desktop/CAOV3_P0_vs_P1_separated_heatmap.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
+```
+
+#P6
+```{r}
+df <- data.frame(counts_P0_average)
+```
+
+```{r}
+library(data.table)
+library(gtools)
+df$P01 <- counts_P6$One
+df$P02 <- counts_P6$two
+df$P03 <- counts_P6$three
+df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
+df$P6A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
+df$P6B <- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
+df$P6C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide6 <- df_heat
+de22 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+heatmap <- ggplot(de22, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+heatmap
+```
+
+```{r}
+ggsave("~/Desktop/CAOV3_P0_vs_P6_separated_heatmap.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
+```
+
+#P7
+```{r}
+df <- data.frame(counts_P0_average)
+```
+
+```{r}
+library(data.table)
+library(gtools)
+df$P01 <- counts_P7$One
+df$P02 <- counts_P7$two
+df$P03 <- counts_P7$three
+df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
+df$P7A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
+df$P7B <- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
+df$P7C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6, 8, 10, 11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide7 <- df_heat
+de23 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+heatmap <- ggplot(de23, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+heatmap
+```
+
+```{r}
+ggsave("~/Desktop/CAOV3_P0_vs_P7_separated_heatmap.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
+```
+
+```{r}
+combined <- rbind(de2, de22, de23)
+```
+
+```{r}
+heatmap <- ggplot(combined, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + aes(y = reorder(gene, value)) + xlab("Passage Number") + ylab("Gene")
+heatmap
+```
+```{r}
+ggsave("~/Desktop/CAOV3_separated_heatmap_multiple_tp.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
+```
+
+```{r}
+combined2 <- merge(deseq2VST_wide1, deseq2VST_wide6, all.x=TRUE, all= TRUE)
+combined <- merge(combined2, deseq2VST_wide7, all.x=TRUE, all= TRUE)
+```
+
+```{r}
+write.csv(combined, "~/Desktop/combined_CAOV3.csv")
+```
+
+```{r}
+library(readr)
+combined_redo <- read_csv("~/Desktop/combined_CAOV3.csv", 
+    col_types = cols(...1 = col_number(), 
+        gene = col_number(), P1A = col_number(), 
+        P1B = col_number(), P1C = col_number(), 
+        P6A = col_number(), P6B = col_number(), P6C = col_number(),P7A = col_number(), P7B = col_number(), P7C = col_number()))
+mat <- combined_redo[  , -2]
+```
+
+```{r}
+mat_num2<- na.omit(mat)
+mat_num3 <- as.matrix(mat_num2)
+```
+
+```{r}
+library(RColorBrewer)
+library(gplots)
+mat_num4 <- mat_num3[ , -1]
+coul <- brewer.pal(3, "RdBu") 
+heatmap(mat_num4, Colv= NA, col= coul)
+```
