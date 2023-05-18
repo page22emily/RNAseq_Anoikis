@@ -11,7 +11,6 @@ Goal: TGFB Isoform Subtype via GSVA
 library("GSVA")
 ```
 
-
 ```{r}
 library(readr)
 counts <- read.csv("~/Downloads/results/all/normalized_counts.csv")
@@ -20,6 +19,7 @@ View(counts)
 
 ```{r}
 no_decimals <- gsub('\\.[0-9]*$','',counts$X)
+colnames(counts) <- c("X", "P0A", "P0B", "P0C", "P1A", "P1B", "P1C", "P3A", "P3B", "P3C", "P4A", "P4B", "P4C", "P6A", "P6B", "P6C", "P7A", "P7B", "P7C")
 #now we are going to add this to the df 
 counts$X <- no_decimals
 counts <- counts[, 2:19]
@@ -74,5 +74,5 @@ data <- gsva.es
 ```{r}
 library(RColorBrewer)
 coul <- brewer.pal(13, "RdBu") 
-heatmap(data, Colv= NA, col= coul) 
+heatmap(data, Colv= NA, col= coul, cexRow= .4) 
 ```
