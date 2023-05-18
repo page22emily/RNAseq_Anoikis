@@ -1,0 +1,78 @@
+---
+title: "GSVA for Passages"
+output: html_document
+date: "2023-05-17"
+---
+
+Goals: individual passage #s and hallmarks for correlation based on individual time points 
+
+Goal: TGFB Isoform Subtype via GSVA
+```{r}
+library("GSVA")
+```
+
+
+```{r}
+library(readr)
+counts <- read.csv("~/Downloads/results/all/normalized_counts.csv")
+View(counts)
+```
+
+```{r}
+no_decimals <- gsub('\\.[0-9]*$','',counts$X)
+#now we are going to add this to the df 
+counts$X <- no_decimals
+counts <- counts[, 2:19]
+rownames(counts) <- no_decimals
+```
+
+```{r}
+counts2 <- as.matrix(counts)
+```
+
+
+#this is for the gene list that we are wanting for the Immune Signatures 
+#same as from ClusterProfiler
+```{r}
+library("msigdbr")
+library(enrichplot)
+# we use ggplot2 to add x axis labels (ex: ridgeplot)
+library(ggplot2)
+library(cowplot)
+# SET THE DESIRED ORGANISM HERE
+organism = "org.Hs.eg.db"
+#BiocManager::install(organism, character.only = TRUE)
+library(organism, character.only = TRUE)
+```
+
+```{r echo=FALSE, message= FALSE, warning= FALSE}
+#to get the gene set that we want
+#in this particular setting we want the H genes, which are Hallmark genes 
+h_gene_sets = msigdbr(species = "Homo sapiens", category = "H")
+m_t2g <- msigdbr(species = "Homo sapiens", category = "H") %>% 
+  dplyr::select(gs_name, ensembl_gene, human_entrez_gene)
+```
+
+```{r}
+msigdbr_list = split(x = h_gene_sets$ensembl_gene, f = h_gene_sets$gs_name)
+```
+
+#running GSVA
+```{r}
+gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
+```
+
+```{r}
+write.csv(gsva.es, "~/Desktop/Ov90_Hallmarls_res.csv")
+```
+
+#heatmap to show the scores 
+```{r}
+data <- gsva.es
+```
+
+```{r}
+library(RColorBrewer)
+coul <- brewer.pal(13, "RdBu") 
+heatmap(data, Colv= NA, col= coul) 
+```
