@@ -9,6 +9,13 @@ Goals: individual passage #s and hallmarks for correlation based on individual t
 Goal: TGFB Isoform Subtype via GSVA
 ```{r}
 library("GSVA")
+library(tidyr)
+library(ggplot2)
+library(scales) # needed for oob parameter
+library(viridis)
+library(reshape2)
+library(data.table)
+library(gtools)
 ```
 
 ```{r}
@@ -75,4 +82,58 @@ data <- gsva.es
 library(RColorBrewer)
 coul <- brewer.pal(13, "RdBu") 
 heatmap(data, Colv= NA, col= coul, cexRow= .4) 
+```
+
+```{r}
+de23 <- melt(data, id.vars= rownames(data))
+```
+
+```{r}
+library(ggplot2)
+p <- ggplot(de23, aes(Var1, value, colour= Var2)) 
+p + geom_point()
+```
+```{r}
+data2 <- data[ c(7, 36) , ]
+data3 <- t(data2)
+rownames(data3) <- colnames(data2)
+de23 <- melt(data3, id.vars= rownames(data3))
+```
+
+```{r}
+library(ggplot2)
+p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_OXIDATIVE_PHOSPHORYLATION, colour= rownames(data_3))) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=10), legend.title=element_blank()) + guides(color=guide_legend(ncol=2))
+p + geom_point()
+ggsave("~/Desktop/OV90_APOP_OXPHOS_Hallmarks_Comparison.tiff", plot = last_plot())
+```
+
+```{r}
+data2 <- data[ c(7, 32) , ]
+data3 <- t(data2)
+rownames(data3) <- colnames(data2)
+data_3 <- as.data.frame(data3)
+p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_MYC_TARGETS_V1, colour= rownames(data_3))) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+p + geom_point()
+ggsave("~/Desktop/OV90_APOP_MYC1_Hallmarks_Comparison.tiff", plot = last_plot())
+```
+
+```{r}
+data2 <- data[ c(7, 33) , ]
+data3 <- t(data2)
+rownames(data3) <- colnames(data2)
+data_3 <- as.data.frame(data3)
+p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_MYC_TARGETS_V2, colour= rownames(data_3))) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+p + geom_point()
+ggsave("~/Desktop/OV90_APOP_MYC2_Hallmarks_Comparison.tiff", plot = last_plot())
+```
+
+
+```{r}
+data2 <- data[ c(7, 14) , ]
+data3 <- t(data2)
+rownames(data3) <- colnames(data2)
+data_3 <- as.data.frame(data3)
+p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION, colour= col)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+p + geom_point()
+ggsave("~/Desktop/OV90_APOP_EMT_Hallmarks_Comparison.tiff", plot = last_plot())
 ```

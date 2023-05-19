@@ -98,9 +98,6 @@ Ov90 <- OV90_enrich[ , 1:5]
 Ov90_fix <- pivot_longer(Ov90, col= 2:5, names_to = "Time_Point", values_to = "enrichment_score")
 ```
 
-
-ggplot(data, aes(fill=condition, y=value, x=specie)) + 
-    geom_bar(position="dodge", stat="identity")
 ```{r}
 x= Ov90_fix$enrichment_score
 y= Ov90_fix$`OV90TP01$X`
@@ -207,6 +204,7 @@ ggplot(data = Three, aes(x = OV90, y = CAOV3, shape=factor(Hallmarks), fill=fact
                 color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
 ggsave("~/Desktop/P0_P1_Hallmarks.tiff", plot = last_plot(), width= 49, height= 30, unit= "in")
 ```
+
 ```{r}
 P1_P7_combined <- as.data.frame(OV90_enrich$`OV90TP01$X`)
 P1_P7_combined$OV90 <- OV90_enrich$P1_vs_P7_enrich
