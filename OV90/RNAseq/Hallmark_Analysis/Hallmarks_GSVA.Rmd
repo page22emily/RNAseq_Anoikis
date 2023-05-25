@@ -80,8 +80,13 @@ data <- gsva.es
 
 ```{r}
 library(RColorBrewer)
-coul <- brewer.pal(13, "RdBu") 
+coul <- brewer.pal(11, "RdBu") 
 heatmap(data, Colv= NA, col= coul, cexRow= .4) 
+legend(x= "bottom", legend= c("-0.6", "-0.48", "-0.36", "-0.24", "-0.12", "0","0.12", "0.24", "0.36", "0.48", "0.6"), fill=coul,  xpd = TRUE, horiz = TRUE,  inset = c(0, -0.4),  bty = "n", cex = 0.75)
+```
+```{r}
+library(ComplexHeatmap)
+Heatmap(data, col = coul, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
 ```
 
 ```{r}
@@ -89,20 +94,37 @@ de23 <- melt(data, id.vars= rownames(data))
 ```
 
 ```{r}
+Group_values <- rep(c("P0","P1","P3","P4","P6","P7"),each=150)
+```
+
+```{r}
+de23$Group <- Group_values
+```
+
+
+```{r}
 library(ggplot2)
-p <- ggplot(de23, aes(Var1, value, colour= Var2)) 
+p <- ggplot(de23, aes(Var1, value, colour= Group)) 
 p + geom_point()
 ```
 ```{r}
 data2 <- data[ c(7, 36) , ]
 data3 <- t(data2)
 rownames(data3) <- colnames(data2)
-de23 <- melt(data3, id.vars= rownames(data3))
+data_3 <- as.data.frame(data3)
+```
+
+```{r}
+Group_values <- rep(c("P0","P1","P3","P4","P6","P7"),each=3)
+```
+
+```{r}
+data_3$Group <- Group_values
 ```
 
 ```{r}
 library(ggplot2)
-p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_OXIDATIVE_PHOSPHORYLATION, colour= rownames(data_3))) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=10), legend.title=element_blank()) + guides(color=guide_legend(ncol=2))
+p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_OXIDATIVE_PHOSPHORYLATION, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=10), legend.title=element_blank()) + guides(color=guide_legend(ncol=2))
 p + geom_point()
 ggsave("~/Desktop/OV90_APOP_OXPHOS_Hallmarks_Comparison.tiff", plot = last_plot())
 ```
@@ -112,7 +134,8 @@ data2 <- data[ c(7, 32) , ]
 data3 <- t(data2)
 rownames(data3) <- colnames(data2)
 data_3 <- as.data.frame(data3)
-p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_MYC_TARGETS_V1, colour= rownames(data_3))) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+data_3$Group <- Group_values
+p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_MYC_TARGETS_V1, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
 p + geom_point()
 ggsave("~/Desktop/OV90_APOP_MYC1_Hallmarks_Comparison.tiff", plot = last_plot())
 ```
@@ -122,7 +145,8 @@ data2 <- data[ c(7, 33) , ]
 data3 <- t(data2)
 rownames(data3) <- colnames(data2)
 data_3 <- as.data.frame(data3)
-p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_MYC_TARGETS_V2, colour= rownames(data_3))) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+data_3$Group <- Group_values
+p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_MYC_TARGETS_V2, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
 p + geom_point()
 ggsave("~/Desktop/OV90_APOP_MYC2_Hallmarks_Comparison.tiff", plot = last_plot())
 ```
@@ -133,7 +157,8 @@ data2 <- data[ c(7, 14) , ]
 data3 <- t(data2)
 rownames(data3) <- colnames(data2)
 data_3 <- as.data.frame(data3)
-p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION, colour= col)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+data_3$Group <- Group_values
+p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
 p + geom_point()
 ggsave("~/Desktop/OV90_APOP_EMT_Hallmarks_Comparison.tiff", plot = last_plot())
 ```

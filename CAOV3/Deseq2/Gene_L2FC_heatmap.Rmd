@@ -90,6 +90,40 @@ df <- data.frame(counts_P0_average)
 ```
 
 ```{r}
+df$P01 <- counts_P0$One
+df$P02 <- counts_P0$two
+df$P03 <- counts_P0$three
+df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
+df$P0A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
+df$P0B<- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
+df$P0C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide01 <- df_heat
+de21 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+df <- data.frame(counts_P0_average)
+```
+
+```{r}
 df$P01 <- counts_P1$One
 df$P02 <- counts_P1$two
 df$P03 <- counts_P1$three
@@ -221,7 +255,7 @@ ggsave("~/Desktop/CAOV3_P0_vs_P7_separated_heatmap.png", plot = last_plot(), wid
 ```
 
 ```{r}
-combined <- rbind(de2, de22, de23)
+combined <- rbind(de21, de2, de22, de23)
 ```
 
 ```{r}
@@ -233,13 +267,15 @@ ggsave("~/Desktop/CAOV3_separated_heatmap_multiple_tp.png", plot = last_plot(), 
 ```
 
 ```{r}
-combined2 <- merge(deseq2VST_wide1, deseq2VST_wide6, all.x=TRUE, all= TRUE)
+combined3 <- merge(deseq2VST_wide01, deseq2VST_wide1, all.x=TRUE, all= TRUE)
+combined2 <- merge(combined3, deseq2VST_wide6, all.x=TRUE, all= TRUE)
 combined <- merge(combined2, deseq2VST_wide7, all.x=TRUE, all= TRUE)
 ```
 
 ```{r}
 write.csv(combined, "~/Desktop/combined_CAOV3.csv")
 ```
+
 
 ```{r}
 library(readr)
@@ -261,5 +297,9 @@ library(RColorBrewer)
 library(gplots)
 mat_num4 <- mat_num3[ , -1]
 coul <- brewer.pal(3, "RdBu") 
-heatmap(mat_num4, Colv= NA, col= coul)
+```
+
+```{r}
+library(ComplexHeatmap)
+Heatmap(mat_num4, col = coul, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), use_raster= FALSE)
 ```

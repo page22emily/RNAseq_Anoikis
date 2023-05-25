@@ -351,6 +351,7 @@ mat <- combined_redo[  , -2]
 ```
 
 ```{r}
+rownames(mat) <- combined$gene
 mat_num2<- na.omit(mat)
 mat_num3 <- as.matrix(mat_num2)
 ```
@@ -360,7 +361,9 @@ library(RColorBrewer)
 library(gplots)
 mat_num4 <- mat_num3[ , -1]
 coul <- brewer.pal(9, "RdBu") 
-heatmap(mat_num4, Colv= NA, col= coul)
-legend(x="right", legend= c("-4", "-3", "-2", "-1", "0", "1", "2", "3", ""), fill=coul)
 ```
 
+```{r}
+library(ComplexHeatmap)
+Heatmap(mat_num4, col = coul, cluster_columns = FALSE, use_raster= FALSE)
+```
