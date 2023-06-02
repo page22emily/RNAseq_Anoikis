@@ -74,11 +74,13 @@ data <- gsva.es
 ```{r}
 library(RColorBrewer)
 coul <- brewer.pal(13, "RdBu") 
-heatmap(data, Colv= NA, col= coul, cexRow= .4) 
+coul2 <- coul + scale_color_brewer(direction = -1)
+heatmap(data, Colv= NA, col= coul2, cexRow= .4) 
 ```
+
 ```{r}
 library(ComplexHeatmap)
-Heatmap(data, col = coul, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
+Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
 ```
 
 ```{r}

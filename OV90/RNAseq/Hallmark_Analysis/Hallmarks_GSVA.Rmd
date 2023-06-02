@@ -85,8 +85,9 @@ heatmap(data, Colv= NA, col= coul, cexRow= .4)
 legend(x= "bottom", legend= c("-0.6", "-0.48", "-0.36", "-0.24", "-0.12", "0","0.12", "0.24", "0.36", "0.48", "0.6"), fill=coul,  xpd = TRUE, horiz = TRUE,  inset = c(0, -0.4),  bty = "n", cex = 0.75)
 ```
 ```{r}
+coul2 <- coul + scale_color_brewer(direction = -1)
 library(ComplexHeatmap)
-Heatmap(data, col = coul, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
+Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
 ```
 
 ```{r}
