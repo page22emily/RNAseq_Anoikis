@@ -296,10 +296,15 @@ mat_num3 <- as.matrix(mat_num2)
 library(RColorBrewer)
 library(gplots)
 mat_num4 <- mat_num3[ , -1]
-coul <- brewer.pal(3, "RdBu") 
+coul <- brewer.pal(9, "RdBu") 
+```
+
+```{r}
+coul2 <- coul + scale_color_brewer(direction = -1)
 ```
 
 ```{r}
 library(ComplexHeatmap)
-Heatmap(mat_num4, col = coul, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), use_raster= FALSE)
+Heatmap(mat_num4, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), use_raster= FALSE)
 ```
+
