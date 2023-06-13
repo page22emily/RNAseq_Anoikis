@@ -6,7 +6,6 @@ date: "2023-05-17"
 
 Goals: individual passage #s and hallmarks for correlation based on individual time points 
 
-Goal: TGFB Isoform Subtype via GSVA
 ```{r}
 library("GSVA")
 library(tidyr)
@@ -66,11 +65,11 @@ msigdbr_list = split(x = h_gene_sets$ensembl_gene, f = h_gene_sets$gs_name)
 
 #running GSVA
 ```{r}
-gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
+gsva.es <- gsva(counts2, msigdbr_list, method= "zscore", verbose=TRUE)
 ```
 
 ```{r}
-write.csv(gsva.es, "~/Desktop/Ov90_Hallmarls_res.csv")
+write.csv(gsva.es, "~/Desktop/Ov90_Hallmarls_res_zscore.csv")
 ```
 
 #heatmap to show the scores 
