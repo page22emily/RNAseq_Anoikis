@@ -199,6 +199,30 @@ plotDispEsts(dds)
 ```{r}
 counts <- dds@assays@data@listData[["counts"]]
 ```
+#HERE IS WHERE I AM WORKING CURRENTLY 
+```{r}
+res_7 <- na.omit(res_7)
+res_8 <- na.omit(res_8)
+res_9 <- na.omit(res_9)
+```
+
+```{r}
+res7_adj2 <- res_7[res_7$padj <= .05 & res_7$log2FoldChange >= 1.5, ]
+res7_adj3 <- res_7[res_7$padj <= .05 & res_7$log2FoldChange <= -1.5, ]
+
+res8_adj2 <- res_8[res_8$padj <= .05 & res_8$log2FoldChange >= 1.5, ]
+res8_adj3 <- res_8[res_8$padj <= .05 & res_8$log2FoldChange <= -1.5, ]
+
+res9_adj2 <- res_9[res_9$padj <= .05 & res_9$log2FoldChange >= 1.5, ]
+res9_adj3 <- res_9[res_9$padj <= .05 & res_9$log2FoldChange <= -1.5, ]
+```
+
+So now we have a data frame for each up and down regulated set in each seq data set 
+Now, we want to combine these and use the information to make a heatmap. 
+
+```{r}
+sigGenes <- as.list(c(res7_adj2@rownames, res7_adj3@rownames, res8_adj2@rownames, res8_adj3@rownames, res9_adj2@rownames, res9_adj3@rownames))
+```
 
 ```{r}
 counts_PO_DMSO <- counts[ , 1:3]
@@ -358,20 +382,4 @@ gene <- df_heat$gene
 df_heat_2$gene <- gene
 ```
 
-```{r}
-library(ggplot2)
-library(scales) # needed for oob parameter
-library(viridis)
-```
-
-```{r}
-library(reshape2)
-# First compare wide vs long version
-de2 <- melt(df_heat_2, id.vars="gene")
-```
-
-```{r}
-heatmap <- ggplot(de2, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
-heatmap
-```
 
