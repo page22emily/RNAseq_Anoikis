@@ -59,11 +59,11 @@ msigdbr_list = split(x = h_gene_sets$ensembl_gene, f = h_gene_sets$gs_name)
 
 #running GSVA
 ```{r}
-gsva.es <- gsva(counts2, msigdbr_list, method= "zscore", verbose=TRUE)
+gsva.es <- gsva(counts2, msigdbr_list, method= "ssgsea", verbose=TRUE)
 ```
 
 ```{r}
-write.csv(gsva.es, "~/Desktop/CAOV3_Hallmarks_res_zscore.csv")
+write.csv(gsva.es, "~/Desktop/CAOV3_Hallmarks_res_ssgsea.csv")
 ```
 
 #heatmap to show the scores 
@@ -95,7 +95,18 @@ data_3 <- as.data.frame(data3)
 ```
 
 ```{r}
-Group_values <- rep(c("P0","P1", "P6","P7"),each=3)
+library(tidyverse)
+```
+
+```{r}
+data_3 <- data_3 %>% 
+  mutate(zscore_Apop = (HALLMARK_APOPTOSIS - mean(HALLMARK_APOPTOSIS))/sd(HALLMARK_APOPTOSIS))
+data_3 <- data_3 %>% 
+  mutate(zscore_OXPHOS = (HALLMARK_OXIDATIVE_PHOSPHORYLATION - mean(HALLMARK_OXIDATIVE_PHOSPHORYLATION))/sd(HALLMARK_OXIDATIVE_PHOSPHORYLATION))
+```
+
+```{r}
+Group_values <- rep(c("P0","P1", "P6", "P7"),each=3)
 ```
 
 ```{r}
@@ -104,7 +115,7 @@ data_3$Group <- Group_values
 
 ```{r}
 library(ggplot2)
-p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_OXIDATIVE_PHOSPHORYLATION, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=10), legend.title=element_blank()) + guides(color=guide_legend(ncol=2))
+p <- ggplot(data_3, aes(zscore_Apop, zscore_OXPHOS, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=10), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + scale_x_continuous("Apoptosis ssGSEA score", breaks= c(-1.5, -1, -0.5, 0, 0.5, 1, 1.5), ) + scale_y_continuous("Oxidative Phosphorylation ssGSEA score", breaks= c(3, 2, 1, 0, -1))
 p + geom_point()
 ggsave("~/Desktop/CAOV3_APOP_OXPHOS_Hallmarks_Comparison.tiff", plot = last_plot())
 ```
@@ -114,9 +125,22 @@ data2 <- data[ c(7, 32) , ]
 data3 <- t(data2)
 rownames(data3) <- colnames(data2)
 data_3 <- as.data.frame(data3)
+```
+
+```{r}
+data_3 <- data_3 %>% 
+  mutate(zscore_Apop = (HALLMARK_APOPTOSIS - mean(HALLMARK_APOPTOSIS))/sd(HALLMARK_APOPTOSIS))
+data_3 <- data_3 %>% 
+  mutate(zscore_MYC_TARGETSV1 = (HALLMARK_MYC_TARGETS_V1 - mean(HALLMARK_MYC_TARGETS_V1))/sd(HALLMARK_MYC_TARGETS_V1))
+```
+
+```{r}
 data_3$Group <- Group_values
-p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_MYC_TARGETS_V1, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+p <- ggplot(data_3, aes(zscore_Apop, zscore_MYC_TARGETSV1, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + scale_x_continuous("Apoptosis ssGSEA score", breaks= c(-1.5, -1, -0.5, 0, 0.5, 1, 1.5), ) + scale_y_continuous("MYC Targets V1 ssGSEA score", breaks= c(3, 2, 1, 0, -1))
 p + geom_point()
+```
+
+```{r}
 ggsave("~/Desktop/CAOV3_APOP_MYC1_Hallmarks_Comparison.tiff", plot = last_plot())
 ```
 
@@ -126,11 +150,20 @@ data3 <- t(data2)
 rownames(data3) <- colnames(data2)
 data_3 <- as.data.frame(data3)
 data_3$Group <- Group_values
-p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_MYC_TARGETS_V2, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+```
+
+```{r}
+data_3 <- data_3 %>% 
+  mutate(zscore_Apop = (HALLMARK_APOPTOSIS - mean(HALLMARK_APOPTOSIS))/sd(HALLMARK_APOPTOSIS))
+data_3 <- data_3 %>% 
+  mutate(zscore_MYC_TARGETSV2 = (HALLMARK_MYC_TARGETS_V2 - mean(HALLMARK_MYC_TARGETS_V2))/sd(HALLMARK_MYC_TARGETS_V2))
+```
+
+```{r}
+p <- ggplot(data_3, aes(zscore_Apop, zscore_MYC_TARGETSV2, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2))  + scale_x_continuous("Apoptosis ssGSEA score", breaks= c(-1.5, -1, -0.5, 0, 0.5, 1, 1.5), ) + scale_y_continuous("MYC Targets V2 ssGSEA score", breaks= c(3, 2, 1, 0, -1))
 p + geom_point()
 ggsave("~/Desktop/CAOV3_APOP_MYC2_Hallmarks_Comparison.tiff", plot = last_plot())
 ```
-
 
 ```{r}
 data2 <- data[ c(7, 14) , ]
@@ -138,7 +171,17 @@ data3 <- t(data2)
 rownames(data3) <- colnames(data2)
 data_3 <- as.data.frame(data3)
 data_3$Group <- Group_values
-p <- ggplot(data_3, aes(HALLMARK_APOPTOSIS, HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) 
+```
+
+```{r}
+data_3 <- data_3 %>% 
+  mutate(zscore_Apop = (HALLMARK_APOPTOSIS - mean(HALLMARK_APOPTOSIS))/sd(HALLMARK_APOPTOSIS))
+data_3 <- data_3 %>% 
+  mutate(zscore_EMT = (HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION - mean(HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION))/sd(HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION))
+```
+
+```{r}
+p <- ggplot(data_3, aes(zscore_Apop, zscore_EMT, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2))  + scale_x_continuous("Apoptosis ssGSEA score", breaks= c(-1.5, -1, -0.5, 0, 0.5, 1, 1.5), ) + scale_y_continuous("EMT ssGSEA score", breaks= c(2, 1, 0, -1))
 p + geom_point()
 ggsave("~/Desktop/CAOV3_APOP_EMT_Hallmarks_Comparison.tiff", plot = last_plot())
 ```
