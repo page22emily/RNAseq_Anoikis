@@ -74,7 +74,7 @@ write.csv(gsva.es, "~/Desktop/Ov90_Hallmarls_res_ssgsea.csv")
 
 #heatmap to show the scores 
 ```{r}
-data2 <- gsva.es
+data <- gsva.es
 ```
 
 

@@ -1,0 +1,47 @@
+---
+title: "heatmap_pathway"
+output: html_document
+date: "2023-06-15"
+---
+
+#read data in 
+```{r}
+P0 <- read.csv("~/Desktop/OV90_15U_gse_P0_15U_vs_DMSO_1k_perm_pval_1_cutoff_BH.csv")
+P1 <- read.csv("~/Desktop/OV90_15U_gse_P1_15U_vs_DMSO_1k_perm_pval_1_cutoff_BH.csv")
+P11 <- read.csv("~/Desktop/OV90_15U_gse_P11_15U_vs_DMSO_1k_perm_pval_1_cutoff_BH.csv")
+```
+
+
+```{r}
+data2 <- P0[ , c(2, 6)]
+rownames(data2) <- data2$Description
+colnames(data2) <- c("ID", "P0_NES")
+data3 <- P1[ , c(2, 6)]
+rownames(data3) <- data3$Description
+colnames(data3) <- c("ID", "P1_NES")
+data4 <- P11[ , c(2, 6)]
+rownames(data4) <- data4$Description
+colnames(data4) <- c("ID", "P11_NES")
+```
+
+```{r}
+data1 <- merge (data2, data3, by= "ID") 
+data <- merge(data1, data4, by= "ID")
+```
+
+```{r}
+data2 <- as.matrix(data[ , -1])
+rownames(data2) <- data$ID
+```
+
+```{r}
+library(RColorBrewer)
+coul <- brewer.pal(11, "RdBu") 
+```
+
+```{r}
+coul2 <- coul + scale_color_brewer(direction = -1)
+library(ComplexHeatmap)
+Heatmap(data2, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
+```
+  
