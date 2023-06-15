@@ -57,6 +57,11 @@ dds <- DESeqDataSetFromTximport(txi, sampleTable, ~condition)
 dds <- DESeq(dds)
 ```
 
+```{r}
+counts <- counts(dds[ , ], normalized = TRUE)
+write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/15U/counts_15U.csv")
+```
+
 This is going to tell you information about the results from running DESeq2 
 ```{r}
 res <- results(dds, contrast= c("condition", "P0_15U", "P1_15U"))
