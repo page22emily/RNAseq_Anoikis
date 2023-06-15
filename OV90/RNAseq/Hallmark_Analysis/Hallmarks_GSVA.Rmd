@@ -69,12 +69,14 @@ gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
 ```
 
 ```{r}
-write.csv(gsva.es, "~/Desktop/Ov90_15U_Hallmarls_res_gsva.csv")
+write.csv(gsva.es, "~/Desktop/Ov90_15U_Hallmarls_res_zscore.csv")
 ```
 
 #heatmap to show the scores 
 ```{r}
-data <- gsva.es
+data1 <- gsva.es
+col.order <- c("D01", "D02", "D03", "U01", "U02", "U03", "D11", "D12", "D13", "U11", "U12", "U13", "D111", "D112", "D113", "U111", "U112", "U113")
+data <-  data1[ , col.order]
 ```
 
 
@@ -83,5 +85,5 @@ library(RColorBrewer)
 coul <- brewer.pal(11, "RdBu") 
 coul2 <- coul + scale_color_brewer(direction = -1)
 library(ComplexHeatmap)
-Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
+Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), )
 ```
