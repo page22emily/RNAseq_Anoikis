@@ -1,5 +1,5 @@
 ---
-title: "GSVA_15U"
+title: "GSVA_15U_only"
 output: html_document
 date: "2023-06-20"
 ---
@@ -20,16 +20,16 @@ library(org.Hs.eg.db)
 
 ```{r}
 library(readr)
-counts <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/counts/counts_15U.csv")
+counts <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/counts/counts_15U_only.csv")
 View(counts)
 ```
 
 ```{r}
 no_decimals <- gsub('\\.[0-9]*$','',counts$X)
-colnames(counts) <- c("X", "D01", "D02", "D03", "D11", "D12", "D13", "D111", "D112", "D113", "U01", "U02", "U03", "U11", "U12", "U13", "U111", "U112", "U113")
+colnames(counts) <- c("X", "U01", "U02", "U03", "U11", "U12", "U13", "U111", "U112", "U113")
 #now we are going to add this to the df 
 counts$X <- no_decimals
-counts <- counts[, 2:19]
+counts <- counts[, 2:10]
 rownames(counts) <- no_decimals
 ```
 
@@ -70,20 +70,15 @@ gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
 ```
 
 ```{r}
-write.csv(gsva.es, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/Ov90_15U_Hallmarks_res_gsva.csv")
+write.csv(gsva.es, "~/RNAseq_Anoikis/OV90/RNAseq/15U/15U_only/OV90_15U_only_Hallmarks_res_gsva.csv")
 ```
 
 #heatmap to show the scores 
-```{r}
-data1 <- gsva.es
-col.order <- c("D01", "D02", "D03", "U01", "U02", "U03", "D11", "D12", "D13", "U11", "U12", "U13", "D111", "D112", "D113", "U111", "U112", "U113")
-data <-  data1[ , col.order]
-```
-
 
 ```{r}
+data <- gsva.es
 library(RColorBrewer)
-coul <- brewer.pal(11, "RdBu") 
+coul <- brewer.pal(11, "RdBu")
 coul2 <- coul + scale_color_brewer(direction = -1)
 library(ComplexHeatmap)
 Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), )
