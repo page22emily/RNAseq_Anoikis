@@ -3,22 +3,6 @@ title: "separated_15U_15U"
 output: html_document
 date: "2023-06-20"
 ---
-
-is to compare the groups of the anoikis project that have been treated with 15U
-Concern was potential overnormalization. Separating these out so that we can see if there are any notable differences 
-```{r message= FALSE, warning= FALSE, echo=FALSE}
-library(tximport)
-library(GenomicFeatures)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(DESeq2)
-```
-
-```{r---
-title: "separated_15U_15U"
-output: html_document
-date: "2023-06-20"
----
-
 is to compare the groups of the anoikis project that have been treated with 15U
 Concern was potential overnormalization. Separating these out so that we can see if there are any notable differences 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
