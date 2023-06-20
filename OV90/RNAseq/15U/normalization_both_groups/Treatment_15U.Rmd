@@ -1,0 +1,194 @@
+---
+title: "Treatment15U"
+output: html_document
+date: "2023-03-23"
+---
+15U 
+This is to compare the groups of the anoikis project that have been treated with 15U
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+library(tximport)
+library(GenomicFeatures)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(DESeq2)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txdb <- loadDb("C:/Users/empage/Documents/Lab_Stuff/Lab_RNAseq_Tutorial/gencode.v19.annotation.gtf_withproteinids.TxDb")
+k <- keys(txdb, keytype = "TXNAME")
+tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+```
+
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dir <- "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/quants"  #this is a path that you will change. This is the quants folder from Salmon that should be locally on your computer 
+samples <- read.csv(file= "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/meta_15U_updated.csv") 
+files <- file.path(dir, samples$Sample_ID, "quant.sf")
+all(file.exists(files))
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txi <- tximport(files, type = "salmon", tx2gene= tx2gene, ignoreAfterBar= TRUE)
+names(txi)
+```
+
+
+This is for setting up the meta data and DESeq2 object so that you can do your analysis 
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+sample_meta_data <- read.csv(file= "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/meta_15U_updated.csv") 
+sampleFiles <- samples$Sample_ID
+sampleCondition <- sample_meta_data$Passage_ID
+sampleTable <- data.frame(sampleName = sampleFiles,
+                          fileName = sampleFiles,
+                          condition = sampleCondition)
+sampleTable$condition <- factor(sampleTable$condition)
+```
+
+
+```{r echo=FALSE}
+colnames(txi$counts) <- rownames(sampleTable)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeqDataSetFromTximport(txi, sampleTable, ~condition)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeq(dds)
+```
+
+```{r}
+counts <- counts(dds[ , ], normalized = TRUE)
+write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/15U/counts_15U.csv")
+```
+
+This is going to tell you information about the results from running DESeq2 
+```{r}
+res <- results(dds, contrast= c("condition", "P0_15U", "P1_15U"))
+res
+```
+```{r}
+summary(res)
+```
+
+You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
+Here is an example template. There's a # in front of it so that it is not running 
+```{r}
+res_2 <- results(dds, contrast=c("condition","P0_15U","P1.1_15U"))
+```
+
+```{r}
+summary(res_2)
+```
+
+
+```{r}
+res_3 <- results(dds, contrast=c("condition","P1_15U","P1.1_15U"))
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res_3)
+```
+
+```{r}
+res_4 <- results(dds, contrast=c("condition","P1_DMSO","P1.1_DMSO"))
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res_4)
+```
+
+```{r}
+res_5 <- results(dds, contrast=c("condition","P0_DMSO","P1.1_DMSO"))
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res_5)
+```
+
+```{r}
+res_6 <- results(dds, contrast=c("condition","P0_DMSO","P1_DMSO"))
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res_6)
+```
+
+```{r}
+res_7 <- results(dds, contrast=c("condition","P0_15U","P0_DMSO"))
+write.csv(res_7, "~/RNAseq_Anoikis/OV90/RNAseq/15U/P0_15U_vs_P0_DMSO.csv")
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res_7)
+```
+```{r}
+res_8 <- results(dds, contrast=c("condition","P1_15U","P1_DMSO"))
+write.csv(res_8, "~/RNAseq_Anoikis/OV90/RNAseq/15U/P1_15U_vs_P1_DMSO.csv")
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res_8)
+```
+```{r}
+res_9 <- results(dds, contrast=c("condition","P1.1_15U","P1.1_DMSO"))
+write.csv(res_9, "~/RNAseq_Anoikis/OV90/RNAseq/15U/P11_15U_vs_P11_DMSO.csv")
+```
+
+Here is another portion to see what all is in the DESeq2 object 
+```{r}
+summary(res_9)
+```
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+Now you can start going through the plot functions and seeing what the data actually looks like 
+```{r echo=FALSE}
+plotMA(res, ylim=c(-2,2))
+```
+
+```{r echo=FALSE}
+plotMA(res05, ylim=c(-2,2))
+```
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+```
+
+```{r}
+rld <- rlog(dds, blind=FALSE)
+```
+
+```{r}
+ntd <- normTransform(dds)
+```
+
+```{r}
+plotPCA(vsd, intgroup=c("condition"))
+```
+
+```{r}
+comparisons <- read.csv("C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/15U_DMSO_comparisons.csv")
+```
+
+```{r}
+library(ggplot2)
+ggplot(comparisons, aes(x=Comparison, y= LFC.0, color=treatment)) + geom_point() +  labs(title="Comparison of 15U and DMSO Treatments",
+       x="Comparison Groups", y = "Number of Genes with a LFC > 0") + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+```
+```{r}
+ggplot(comparisons, aes(x=Comparison, y= LFC.0.1, color=treatment)) + geom_point() +  labs(title="Comparison of 15U and DMSO Treatments",
+       x="Comparison Groups", y = "Number of Genes with a LFC < 0") + theme(panel.background = element_blank(), panel.grid.major= element_line())  + theme(axis.line = element_line(colour = "black"))
+```
+
+```{r}
+plotDispEsts(dds)
+```
