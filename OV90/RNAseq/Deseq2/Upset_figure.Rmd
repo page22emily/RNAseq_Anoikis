@@ -22,6 +22,7 @@ Table showing the percentage of genes in each category
 Files for this are labeled as Comparison Group_Gene_Annotation
 Column of interest will be labeled as Group
 ~/Desktop/OV90_Outputs/DESeq2
+
 ```{r}
 P0_vs_P1 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P1_vs_P0.csv")
 P0_vs_P4 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P4_vs_P0.csv")
@@ -172,17 +173,17 @@ Group
 
 ```{r}
 upset(up, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
-ggsave("~/Desktop/Up_OV90_fullset.png", last_plot())
+ggsave("~/Desktop/Up_OV90_fullset.tiff", last_plot())
 ```
 
 ```{r}
 upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Down Regulated Genes")
-ggsave("~/Desktop/Down_OV90_fullset.png", last_plot())
+ggsave("~/Desktop/Down_OV90_fullset.tiff", last_plot())
 ```
 
 ```{r}
 upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Genes with No Significant Change")
-ggsave("~/Desktop/NC_OV90_fullset.png", last_plot())
+ggsave("~/Desktop/NC_OV90_fullset.tiff", last_plot())
 ```
 
 ```{r}
@@ -192,14 +193,57 @@ Group
 
 ```{r}
 upset(up, Group, min_degree=1,sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
-ggsave("~/Desktop/Up_OV90_no_P4set.png", last_plot())
+ggsave("~/Desktop/Up_OV90_no_P4set.tiff", last_plot())
 ```
 
 ```{r}
 upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Down Regulated Genes")
-ggsave("~/Desktop/Down_OV90_no_P4set.png", last_plot())
+ggsave("~/Desktop/Down_OV90_no_P4set.tiff", last_plot())
 ```
+
 ```{r}
 upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Genes with No Significant Change")
-ggsave("~/Desktop/NC_OV90_no_P4set.png", last_plot())
+ggsave("~/Desktop/NC_OV90_no_P4set.tiff", last_plot())
+```
+
+
+```{r}
+Group <- colnames(up)[c(2:5)]
+Group
+```
+
+```{r}
+upset(up, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', base_annotations= list('Size'=(intersection_size(counts=FALSE))), sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
+ggsave("~/Desktop/Up_OV90_fullset_no_labels.tiff", last_plot())
+```
+
+```{r}
+upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Down Regulated Genes") 
+ggsave("~/Desktop/Down_OV90_fullset_no_labels.tiff", last_plot())
+```
+
+```{r}
+upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Genes with No Significant Change")
+ggsave("~/Desktop/NC_OV90_fullset_no_labels.tiff", last_plot())
+```
+
+
+```{r}
+Group <- colnames(up)[c(2, 4:5)]
+Group
+```
+
+```{r}
+upset(up, Group, min_degree=1,sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle('Up Regulated Genes') 
+ggsave("~/Desktop/Up_OV90_no_P4set_no_labels.tiff", last_plot())
+```
+
+```{r}
+upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Down Regulated Genes")
+ggsave("~/Desktop/Down_OV90_no_P4set_no_labels.tiff", last_plot())
+```
+
+```{r}
+upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Genes with No Significant Change")
+ggsave("~/Desktop/NC_OV90_no_P4set_no_labels.tiff", last_plot())
 ```

@@ -149,16 +149,31 @@ Group
 
 ```{r}
 upset(up, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
-ggsave("~/Desktop/Up_CAOV3.png", last_plot())
+ggsave("~/Desktop/Up_CAOV3.tiff", last_plot())
+```
+
+```{r}
+upset(up, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
+ggsave("~/Desktop/Up_CAOV3_no_labels.tiff", last_plot())
 ```
 
 ```{r}
 upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Down Regulated Genes")
-ggsave("~/Desktop/Down_CAOV3.png", last_plot())
+ggsave("~/Desktop/Down_CAOV3.tiff", last_plot())
 ```
 
 ```{r}
-upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Genes with No Significant Change")
-ggsave("~/Desktop/NC_CAOV3.png", last_plot())
+upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Down Regulated Genes")
+ggsave("~/Desktop/Down_CAOV3_no_labels.tiff", last_plot())
+```
+
+```{r}
+upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Genes with No Significant Change")
+ggsave("~/Desktop/NC_CAOV3.tiff", last_plot())
+```
+
+```{r}
+upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Genes with No Significant Change")
+ggsave("~/Desktop/NC_CAOV3_no_labels.tiff", last_plot())
 ```
 
