@@ -148,7 +148,9 @@ Group
 ```
 
 ```{r}
-upset(up, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
+upset(up, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), legend.background = element_blank(), 
+    legend.box.background = element_blank())
 ggsave("~/Desktop/Up_CAOV3.tiff", last_plot())
 ```
 

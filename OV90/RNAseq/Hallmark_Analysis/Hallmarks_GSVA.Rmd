@@ -119,6 +119,10 @@ data_3 <- data_3 %>%
 ```
 
 ```{r}
+write.csv(data_3, "~/Desktop/apop_vs_oxphos.csv")
+```
+
+```{r}
 Group_values <- rep(c("P0","P1","P3","P4","P6","P7"),each=3)
 ```
 
