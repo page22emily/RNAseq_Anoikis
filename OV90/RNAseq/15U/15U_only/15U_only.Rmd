@@ -80,9 +80,6 @@ Now you can start going through the plot functions and seeing what the data actu
 plotMA(res, ylim=c(-2,2))
 ```
 
-```{r echo=FALSE}
-plotMA(res05, ylim=c(-2,2))
-```
 
 ```{r}
 vsd <- vst(dds, blind=FALSE)
