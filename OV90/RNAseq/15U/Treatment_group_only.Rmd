@@ -1,0 +1,101 @@
+---
+title: "15U_by_Treatment"
+output: html_document
+date: "2023-06-23"
+---
+15U 
+This is to compare the groups of the anoikis project that have been treated with 15U vs DMSO independent of the passage
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+library(tximport)
+library(GenomicFeatures)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(DESeq2)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txdb <- loadDb("C:/Users/empage/Documents/Lab_Stuff/Lab_RNAseq_Tutorial/gencode.v19.annotation.gtf_withproteinids.TxDb")
+k <- keys(txdb, keytype = "TXNAME")
+tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+```
+
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dir <- "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/quants"  #this is a path that you will change. This is the quants folder from Salmon that should be locally on your computer 
+samples <- read.csv(file= "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/Meta_15U.csv") 
+files <- file.path(dir, samples$Sample_ID, "quant.sf")
+all(file.exists(files))
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+txi <- tximport(files, type = "salmon", tx2gene= tx2gene, ignoreAfterBar= TRUE)
+names(txi)
+```
+
+
+This is for setting up the meta data and DESeq2 object so that you can do your analysis 
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+sample_meta_data <- read.csv(file= "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/meta_15U_updated.csv") 
+sampleFiles <- samples$Sample_ID
+sampleCondition <- sample_meta_data$Treatment
+sampleTable <- data.frame(sampleName = sampleFiles,
+                          fileName = sampleFiles,
+                          condition = sampleCondition)
+sampleTable$condition <- factor(sampleTable$condition)
+```
+
+
+```{r echo=FALSE}
+colnames(txi$counts) <- rownames(sampleTable)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeqDataSetFromTximport(txi, sampleTable, ~condition)
+```
+
+```{r message= FALSE, warning= FALSE, echo=FALSE}
+dds <- DESeq(dds)
+```
+
+
+This is going to tell you information about the results from running DESeq2 
+```{r}
+res <- results(dds, contrast= c("condition", "15U", "DMSO"))
+res
+```
+
+```{r}
+summary(res)
+```
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+Now you can start going through the plot functions and seeing what the data actually looks like 
+```{r echo=FALSE}
+plotMA(res, ylim=c(-2,2))
+```
+
+```{r echo=FALSE}
+plotMA(res05, ylim=c(-2,2))
+```
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+```
+
+```{r}
+rld <- rlog(dds, blind=FALSE)
+```
+
+```{r}
+ntd <- normTransform(dds)
+```
+
+```{r}
+plotPCA(vsd, intgroup=c("condition"))
+```
+```{r}
+plotDispEsts(dds)
+```
