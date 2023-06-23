@@ -185,3 +185,28 @@ p <- ggplot(data_3, aes(zscore_Apop, zscore_EMT, colour= Group)) + theme(panel.b
 p + geom_point()
 ggsave("~/Desktop/CAOV3_APOP_EMT_Hallmarks_Comparison.tiff", plot = last_plot())
 ```
+
+```{r}
+data2 <- data[ c(7, 27) , ]
+data3 <- t(data2)
+rownames(data3) <- colnames(data2)
+data_3 <- as.data.frame(data3)
+data_3$Group <- Group_values
+```
+
+```{r}
+data_3 <- data_3 %>% 
+  mutate(zscore_Apop = (HALLMARK_APOPTOSIS - mean(HALLMARK_APOPTOSIS))/sd(HALLMARK_APOPTOSIS))
+data_3 <- data_3 %>% 
+  mutate(zscore_INF = (HALLMARK_INTERFERON_GAMMA_RESPONSE - mean(HALLMARK_INTERFERON_GAMMA_RESPONSE)) /sd(HALLMARK_INTERFERON_GAMMA_RESPONSE))
+```
+
+```{r}
+write.csv(data_3, "~/Desktop/apop_vs_interferon_gamma_CAOV3.csv")
+```
+
+```{r}
+p <- ggplot(data_3, aes(zscore_Apop, zscore_INF, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2))  + scale_x_continuous("Apoptosis ssGSEA score", breaks= c(-1.5, -1, -0.5, 0, 0.5, 1, 1.5), ) + scale_y_continuous("Interferon Gamma Response ssGSEA score", breaks= c(2, 1, 0, -1))
+p + geom_point()
+ggsave("~/Desktop/CAOV3_APOP_INFERON_Hallmarks_Comparison.tiff", plot = last_plot())
+```

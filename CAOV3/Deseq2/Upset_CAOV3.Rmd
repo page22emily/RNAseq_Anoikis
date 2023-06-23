@@ -134,6 +134,13 @@ down <- Down_Genes
 nc <- NC_Genes
 ```
 
+
+```{r}
+write.csv(up, "~/Desktop/up_genes_shared_CAOV3.csv")
+write.csv(down, "~/Desktop/down_genes_shared_CAOV3.csv")
+write.csv(nc, "~/Desktop/nc_genes_shared_CAOV3.csv")
+```
+
 #The rest of Lara's figure is made with UpSet Figures 
 ## Need to use ComplexUpSet because the other one is out of date (yay Lara for telling me)
 ```{r}
