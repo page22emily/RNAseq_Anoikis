@@ -119,15 +119,15 @@ data_3 <- data_3 %>%
 ```
 
 ```{r}
-write.csv(data_3, "~/Desktop/apop_vs_oxphos.csv")
-```
-
-```{r}
 Group_values <- rep(c("P0","P1","P3","P4","P6","P7"),each=3)
 ```
 
 ```{r}
 data_3$Group <- Group_values
+```
+
+```{r}
+write.csv(data_3, "~/Desktop/apop_vs_oxphos_OV90.csv")
 ```
 
 ```{r}
@@ -149,6 +149,10 @@ data_3 <- data_3 %>%
   mutate(zscore_Apop = (HALLMARK_APOPTOSIS - mean(HALLMARK_APOPTOSIS))/sd(HALLMARK_APOPTOSIS))
 data_3 <- data_3 %>% 
   mutate(zscore_MYC_TARGETSV1 = (HALLMARK_MYC_TARGETS_V1 - mean(HALLMARK_MYC_TARGETS_V1))/sd(HALLMARK_MYC_TARGETS_V1))
+```
+
+```{r}
+write.csv(data_3, "~/Desktop/apop_vs_MYC_v1_OV90.csv")
 ```
 
 ```{r}
@@ -174,6 +178,10 @@ data_3 <- data_3 %>%
 ```
 
 ```{r}
+write.csv(data_3, "~/Desktop/apop_vs_MYC_v2_OV90.csv")
+```
+
+```{r}
 p <- ggplot(data_3, aes(zscore_Apop, zscore_MYC_TARGETSV2, colour= Group)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black")) + theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=8), legend.title=element_blank()) + guides(color=guide_legend(ncol=2))  + scale_x_continuous("Apoptosis ssGSEA score", breaks= c(-1.5, -1, -0.5, 0, 0.5, 1, 1.5), ) + scale_y_continuous("MYC Targets V2 ssGSEA score", breaks= c(3, 2, 1, 0, -1))
 p + geom_point()
 ggsave("~/Desktop/OV90_APOP_MYC2_Hallmarks_Comparison.tiff", plot = last_plot())
@@ -192,6 +200,10 @@ data_3 <- data_3 %>%
   mutate(zscore_Apop = (HALLMARK_APOPTOSIS - mean(HALLMARK_APOPTOSIS))/sd(HALLMARK_APOPTOSIS))
 data_3 <- data_3 %>% 
   mutate(zscore_EMT = (HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION - mean(HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION))/sd(HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION))
+```
+
+```{r}
+write.csv(data_3, "~/Desktop/apop_vs_EMT_OV90.csv")
 ```
 
 ```{r}
@@ -216,7 +228,7 @@ data_3 <- data_3 %>%
 ```
 
 ```{r}
-write.csv(data_3, "~/Desktop/apop_vs_interferon_gamma.csv")
+write.csv(data_3, "~/Desktop/apop_vs_interferon_gamma_OV90.csv")
 ```
 
 ```{r}
