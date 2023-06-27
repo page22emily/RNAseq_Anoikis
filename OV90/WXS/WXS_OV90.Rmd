@@ -23,51 +23,51 @@ These steps will only be to see what is happening for each time point. No compar
 #P0
 ```{r}
 mafs <- c("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_2.mutect2.vep.maf")
-anoikis_maf <- merge_mafs(mafs)
+anoikis_maf_P0 <- merge_mafs(mafs)
 ```
 
 ```{r}
 #Shows sample summary.
-save_mutation_type <- getSampleSummary(anoikis_maf)
+save_mutation_type <- getSampleSummary(anoikis_maf_P0)
 write.csv(save_mutation_type, "~/Desktop/wxs_anoikis_ov90_mutations_P0.csv")
 ```
 
 ```{r}
 #Shows gene summary.
-summary_gene <- getGeneSummary(anoikis_maf)
+summary_gene <- getGeneSummary(anoikis_maf_P0)
 write.csv(summary_gene, "~/Desktop/wxs_anoikis_ov90_mutations_by_gene_P0.csv")
 ```
 
 ```{r}
 #shows clinical data associated with samples
-getClinicalData(anoikis_maf)
+getClinicalData(anoikis_maf_P0)
 ```
 
 ```{r}
 #Writes maf summary to an output file with basename laml.
-write.mafSummary(maf = anoikis_maf, basename = 'anoikis_maf')
+write.mafSummary(maf = anoikis_maf_P0, basename = 'anoikis_maf')
 ```
 
 ```{r}
-plotmafSummary(maf = anoikis_maf, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
+plotmafSummary(maf = anoikis_maf_P0, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
 ```{r}
-oncoplot(maf = anoikis_maf, top = 10)
+oncoplot(maf = anoikis_maf_P0, top = 10)
 ```
 
 ```{r}
-laml.titv = titv(maf = anoikis_maf, plot = FALSE, useSyn = TRUE)
+laml.titv = titv(maf = anoikis_maf_P0, plot = FALSE, useSyn = TRUE)
 #plot titv summary
 plotTiTv(res = laml.titv)
 ```
 
 ```{r}
-rainfallPlot(maf = anoikis_maf, detectChangePoints = TRUE, pointSize = 0.4)
+rainfallPlot(maf = anoikis_maf_P0, detectChangePoints = TRUE, pointSize = 0.4)
 ```
 
 ```{r, warning= FALSE, message= FALSE, include = FALSE}
-laml.sig = oncodrive(maf = anoikis_maf, AACol = 'HGVSp_Short', minMut = 5, pvalMethod = 'zscore')
+laml.sig = oncodrive(maf = anoikis_maf_P0, AACol = 'HGVSp_Short', minMut = 5, pvalMethod = 'zscore')
 ```
 
 ```{r}
@@ -186,53 +186,68 @@ plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = TRUE, labelSize = 0
 #P7
 ```{r}
 mafs <- c("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_2.mutect2.vep.maf")
-anoikis_maf <- merge_mafs(mafs)
+anoikis_maf_P7 <- merge_mafs(mafs)
 ```
 
 ```{r}
 #Shows sample summary.
-save_mutation_type <- getSampleSummary(anoikis_maf)
+save_mutation_type <- getSampleSummary(anoikis_maf_P7)
 write.csv(save_mutation_type, "~/Desktop/wxs_anoikis_ov90_mutations_P7.csv")
 ```
 
 ```{r}
 #Shows gene summary.
-summary_gene <- getGeneSummary(anoikis_maf)
+summary_gene <- getGeneSummary(anoikis_maf_P7)
 write.csv(summary_gene, "~/Desktop/wxs_anoikis_ov90_mutations_by_gene_P7.csv")
 ```
 
 ```{r}
 #shows clinical data associated with samples
-getClinicalData(anoikis_maf)
+getClinicalData(anoikis_maf_P7)
 ```
 
 ```{r}
 #Writes maf summary to an output file with basename laml.
-write.mafSummary(maf = anoikis_maf, basename = 'anoikis_maf')
+write.mafSummary(maf = anoikis_maf_P7, basename = 'anoikis_maf')
 ```
 
 ```{r}
-plotmafSummary(maf = anoikis_maf, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
+plotmafSummary(maf = anoikis_maf_P7, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
 ```{r}
-oncoplot(maf = anoikis_maf, top = 10)
+oncoplot(maf = anoikis_maf_P7, top = 10)
 ```
 
 ```{r}
-laml.titv = titv(maf = anoikis_maf, plot = FALSE, useSyn = TRUE)
+laml.titv = titv(maf = anoikis_maf_P7, plot = FALSE, useSyn = TRUE)
 #plot titv summary
 plotTiTv(res = laml.titv)
 ```
 
 ```{r}
-rainfallPlot(maf = anoikis_maf, detectChangePoints = TRUE, pointSize = 0.4)
+rainfallPlot(maf = anoikis_maf_P7, detectChangePoints = TRUE, pointSize = 0.4)
 ```
 
 ```{r, warning= FALSE, include = FALSE}
-laml.sig = oncodrive(maf = anoikis_maf, AACol = 'HGVSp_Short', minMut = 5, pvalMethod = 'zscore')
+laml.sig = oncodrive(maf = anoikis_maf_P7, AACol = 'HGVSp_Short', minMut = 5, pvalMethod = 'zscore')
 ```
 
 ```{r}
 x <- ggplot(plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = TRUE, labelSize = 0.5)) + geom_point() 
 ```
+
+```{r}
+x <- mafCompare(anoikis_maf_P0, anoikis_maf_P7, m1Name="P0", m2Name="P7", minMut= 0)
+```
+
+```{r}
+write.csv(x[["results"]], "~/Desktop/maf_P0_P7_WXS_comparisons.csv")
+```
+
+```{r}
+forestPlot(mafCompareRes = x, pVal= 0.05, geneFontSize = 0.1)
+```
+
+
+
