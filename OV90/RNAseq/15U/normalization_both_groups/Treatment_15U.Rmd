@@ -11,11 +11,15 @@ library(tximport)
 library(GenomicFeatures)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(DESeq2)
+library(EnhancedVolcano)
+library(org.Hs.eg.db)
 ```
 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
 txdb <- loadDb("C:/Users/empage/Documents/Lab_Stuff/Lab_RNAseq_Tutorial/gencode.v19.annotation.gtf_withproteinids.TxDb")
+
 k <- keys(txdb, keytype = "TXNAME")
+
 tx2gene <- select(txdb, k, "GENEID", "TXNAME")
 ```
 
@@ -62,103 +66,192 @@ counts <- counts(dds[ , ], normalized = TRUE)
 write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/15U/counts_15U.csv")
 ```
 
+  
 This is going to tell you information about the results from running DESeq2 
 ```{r}
-res <- results(dds, contrast= c("condition", "P0_15U", "P1_15U"))
-res
+res <- results(dds, contrast= c("condition", "P1_15U","P0_15U"))
+summary(res)
+```
+
+```{r echo=FALSE}
+plotMA(res, ylim=c(-2,2))
+```
+
+```{r}
+ EnhancedVolcano(res,
+    lab = rownames(res),
+    x = 'log2FoldChange',
+    y = 'pvalue')
 ```
 ```{r}
-summary(res)
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_vs_P1_15U.csv")
 ```
 
 You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
 Here is an example template. There's a # in front of it so that it is not running 
 ```{r}
-res_2 <- results(dds, contrast=c("condition","P0_15U","P1.1_15U"))
-```
-
-```{r}
+res_2 <- results(dds, contrast=c("condition","P1.1_15U", "P0_15U"))
 summary(res_2)
 ```
 
+```{r}
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_vs_P11_15U.csv")
+```
+
+```{r echo=FALSE}
+plotMA(res_2, ylim=c(-2,2))
+```
+
+```{r}
+ EnhancedVolcano(res_2,
+    lab = rownames(res_2),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
 
 ```{r}
 res_3 <- results(dds, contrast=c("condition","P1_15U","P1.1_15U"))
-```
-
-Here is another portion to see what all is in the DESeq2 object 
-```{r}
 summary(res_3)
 ```
 
 ```{r}
-res_4 <- results(dds, contrast=c("condition","P1_DMSO","P1.1_DMSO"))
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P11_vs_P1_15U.csv")
 ```
 
-Here is another portion to see what all is in the DESeq2 object 
+```{r echo=FALSE}
+plotMA(res_3, ylim=c(-2,2))
+```
+
 ```{r}
+ EnhancedVolcano(res_3,
+    lab = rownames(res_3),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
+
+```{r}
+res_4 <- results(dds, contrast=c("condition","P1_DMSO","P1.1_DMSO"))
 summary(res_4)
 ```
 
 ```{r}
-res_5 <- results(dds, contrast=c("condition","P0_DMSO","P1.1_DMSO"))
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P11_vs_P1_DMSO.csv")
 ```
 
-Here is another portion to see what all is in the DESeq2 object 
+```{r echo=FALSE}
+plotMA(res_4, ylim=c(-2,2))
+```
+
 ```{r}
+ EnhancedVolcano(res_4,
+    lab = rownames(res_4),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
+
+```{r}
+res_5 <- results(dds, contrast=c("condition", "P1.1_DMSO", "P0_DMSO"))
 summary(res_5)
 ```
 
 ```{r}
-res_6 <- results(dds, contrast=c("condition","P0_DMSO","P1_DMSO"))
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_vs_P11_DMSO.csv")
 ```
 
-Here is another portion to see what all is in the DESeq2 object 
+```{r echo=FALSE}
+plotMA(res_5, ylim=c(-2,2))
+```
+
 ```{r}
+ EnhancedVolcano(res_5,
+    lab = rownames(res_5),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
+
+```{r}
+res_6 <- results(dds, contrast=c("condition", "P1_DMSO", "P0_DMSO"))
 summary(res_6)
 ```
 
 ```{r}
-res_7 <- results(dds, contrast=c("condition","P0_15U","P0_DMSO"))
-write.csv(res_7, "~/RNAseq_Anoikis/OV90/RNAseq/15U/P0_15U_vs_P0_DMSO.csv")
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_vs_P1_DMSO.csv")
 ```
 
-Here is another portion to see what all is in the DESeq2 object 
+```{r echo=FALSE}
+plotMA(res_6, ylim=c(-2,2))
+```
+
 ```{r}
+ EnhancedVolcano(res_6,
+    lab = rownames(res_6),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
+
+```{r}
+res_7 <- results(dds, contrast=c("condition","P0_15U","P0_DMSO"))
 summary(res_7)
 ```
+
+```{r}
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_DMSO_vs_15U.csv")
+```
+
+```{r echo=FALSE}
+plotMA(res_7, ylim=c(-2,2))
+```
+
+```{r}
+ EnhancedVolcano(res_7,
+    lab = rownames(res_7),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
+
 ```{r}
 res_8 <- results(dds, contrast=c("condition","P1_15U","P1_DMSO"))
-write.csv(res_8, "~/RNAseq_Anoikis/OV90/RNAseq/15U/P1_15U_vs_P1_DMSO.csv")
-```
-
-Here is another portion to see what all is in the DESeq2 object 
-```{r}
 summary(res_8)
 ```
+
+```{r}
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P1_DMSO_vs_15U.csv")
+```
+
+```{r echo=FALSE}
+plotMA(res_8, ylim=c(-2,2))
+```
+
+```{r}
+ EnhancedVolcano(res_8,
+    lab = rownames(res_8),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
+
 ```{r}
 res_9 <- results(dds, contrast=c("condition","P1.1_15U","P1.1_DMSO"))
-write.csv(res_9, "~/RNAseq_Anoikis/OV90/RNAseq/15U/P11_15U_vs_P11_DMSO.csv")
-```
-
-Here is another portion to see what all is in the DESeq2 object 
-```{r}
 summary(res_9)
 ```
+
 ```{r}
-res05 <- results(dds, alpha=0.05)
-summary(res05)
-```
-
-Now you can start going through the plot functions and seeing what the data actually looks like 
-```{r echo=FALSE}
-plotMA(res, ylim=c(-2,2))
+write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P11_DMSO_vs_15U.csv")
 ```
 
 ```{r echo=FALSE}
-plotMA(res05, ylim=c(-2,2))
+plotMA(res_9, ylim=c(-2,2))
 ```
 
+
+```{r}
+ EnhancedVolcano(res_9,
+    lab = rownames(res_9),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
+
+
+for the object as a whole  
 ```{r}
 vsd <- vst(dds, blind=FALSE)
 ```
@@ -176,19 +269,6 @@ plotPCA(vsd, intgroup=c("condition"))
 ```
 
 ```{r}
-comparisons <- read.csv("C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/15U_DMSO_comparisons.csv")
-```
-
-```{r}
-library(ggplot2)
-ggplot(comparisons, aes(x=Comparison, y= LFC.0, color=treatment)) + geom_point() +  labs(title="Comparison of 15U and DMSO Treatments",
-       x="Comparison Groups", y = "Number of Genes with a LFC > 0") + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
-```
-```{r}
-ggplot(comparisons, aes(x=Comparison, y= LFC.0.1, color=treatment)) + geom_point() +  labs(title="Comparison of 15U and DMSO Treatments",
-       x="Comparison Groups", y = "Number of Genes with a LFC < 0") + theme(panel.background = element_blank(), panel.grid.major= element_line())  + theme(axis.line = element_line(colour = "black"))
-```
-
-```{r}
 plotDispEsts(dds)
 ```
+
