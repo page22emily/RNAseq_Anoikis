@@ -1,0 +1,37 @@
+---
+title: "Volcano_Plots_15U"
+output: html_document
+date: "2023-06-30"
+---
+```{r}
+library(GenomicFeatures)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(EnhancedVolcano)
+library(org.Hs.eg.db)
+```
+
+```{r}
+P0_edit <- read.csv("~/Desktop/15U/res_P0_DMSO_vs_15U.csv")
+P1_edit <- read.csv("~/Desktop/15U/res_P1_DMSO_vs_15U.csv")
+P11_edit<- read.csv("~/Desktop/15U/res_P11_DMSO_vs_15U.csv")
+```
+
+
+```{r}
+P0 <- P0_edit[ , -1]
+rownames(P0) <- P0_edit$X
+
+P1 <- P1_edit[ , -1]
+rownames(P1) <- P1_edit$X
+
+P11 <- P11_edit[ , -1]
+rownames(P11) <- P11_edit$X
+```
+
+
+```{r}
+ EnhancedVolcano(res_6,
+    lab = rownames(res_6),
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
