@@ -13,6 +13,8 @@ library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(DESeq2)
 library(EnhancedVolcano)
 library(org.Hs.eg.db)
+library(dplyr)
+library(tidyr)
 ```
 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
@@ -35,7 +37,6 @@ all(file.exists(files))
 txi <- tximport(files, type = "salmon", tx2gene= tx2gene, ignoreAfterBar= TRUE)
 names(txi)
 ```
-
 
 This is for setting up the meta data and DESeq2 object so that you can do your analysis 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
@@ -76,6 +77,11 @@ summary(res)
 ```{r echo=FALSE}
 plotMA(res, ylim=c(-2,2))
 ```
+
+annots <- select(org.Hs.eg.db, keys=data, 
+                columns="SYMBOL", keytype="ENSEMBL")
+
+result <- merge(infile, annots, by.x="ENSEMBL", by.y="ENSEMBL")
 
 ```{r}
  EnhancedVolcano(res,
