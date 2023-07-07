@@ -1,0 +1,123 @@
+---
+title: "heatmaps"
+output: html_document
+date: "2023-07-07"
+---
+
+```{r}
+library(tidyr)
+library(ggplot2)
+library(scales) # needed for oob parameter
+library(viridis)
+library(reshape2)
+library(data.table)
+library(gtools)
+library(circlize)
+```
+
+```{r}
+P0_P1_DMSO <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P0_DMSO.csv")
+P0_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_15U_DMSO.csv")
+P1_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_15U_DMSO.csv")
+P11_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_15U_DMSO.csv")
+```
+
+```{r}
+P0_P1_DMSO2 <- P0_P1_DMSO[P0_P1_DMSO$padj <= .05 & P0_P1_DMSO$log2FoldChange >= 1.5, ]
+P0_P1_DMSO3 <- P0_P1_DMSO[P0_P1_DMSO$padj <= .05 & P0_P1_DMSO$log2FoldChange <= -1.5, ]
+
+P0_15U2 <- P0_15U[P0_15U$padj <= .05 & P0_15U$log2FoldChange >= 1.5, ]
+P0_15U3 <- P0_15U[P0_15U$padj <= .05 & P0_15U$log2FoldChange <= -1.5, ]
+
+P1_15U2 <- P1_15U[P1_15U$padj <= .05 & P1_15U$log2FoldChange >= 1.5, ]
+P1_15U3 <- P1_15U[P1_15U$padj <= .05 & P1_15U$log2FoldChange <= -1.5, ]
+
+P11_15U2 <- P11_15U[P11_15U$padj <= .05 & P11_15U$log2FoldChange >= 1.5, ]
+P11_15U3 <- P11_15U[P11_15U$padj <= .05 & P11_15U$log2FoldChange <= -1.5, ]
+```
+
+So now we have a data frame for each up and down regulated set in each seq data set 
+Now, we want to combine these and use the information to make a heatmap. 
+
+```{r}
+sigGenes <- as.list(c(P0_P1_DMSO2$X, P0_P1_DMSO3$X, P0_15U2$X, P0_15U3$X, P1_15U2$X, P1_15U3$X, P11_15U2$X, P11_15U3$X))
+```
+
+```{r}
+P0_P1_DMSO_k <-  P0_P1_DMSO[P0_P1_DMSO$X %in% sigGenes, ]
+P0_15U_k <- P0_15U[P0_15U$X %in% sigGenes, ]
+P1_15U_k <- P1_15U[P1_15U$X %in% sigGenes, ]
+P11_15U_k <- P11_15U[P11_15U$X %in% sigGenes, ]
+``` 
+
+```{r}
+df_heat <- P0_P1_DMSO_k[ , c(1,3)]
+# First compare wide vs long version
+colnames(df_heat) <- c("X", "P0_P1_DMSO_LFC")
+deseq2VST_wide1 <- df_heat
+
+df_heat <- P0_15U_k[ , c(1,3)]
+# First compare wide vs long version
+colnames(df_heat) <- c("X", "P0_15U_LFC")
+deseq2VST_wide2 <- df_heat
+
+
+df_heat <- P1_15U_k[ , c(1,3)]
+# First compare wide vs long version
+colnames(df_heat) <- c("X", "P1_15U_LFC")
+deseq2VST_wide3 <- df_heat
+
+df_heat <- P11_15U_k[ , c(1,3)]
+# First compare wide vs long version
+colnames(df_heat) <- c("X", "P11_15U_LFC")
+deseq2VST_wide4 <- df_heat
+``` 
+
+
+
+```{r}
+combined3 <- merge(deseq2VST_wide1, deseq2VST_wide2, all.x=TRUE, all= TRUE)
+combined1 <- merge(combined3, deseq2VST_wide3, all.x=TRUE, all= TRUE)
+combined <- merge(combined1, deseq2VST_wide4, all.x=TRUE, all= TRUE)
+```
+
+
+```{r}
+mat <- combined
+mat_num2<- na.omit(mat)
+mat_num3 <- as.matrix(mat_num2)
+mat_3 <- mat_num3[ , -1]
+```
+
+
+```{r}
+as.numeric(mat_3)
+```
+```{r}
+rownames(mat_3) <- NULL
+```
+
+```{r}
+de24 <- melt(combined, id.vars=c("X"))
+```
+
+
+```{r}
+heatmap <- ggplot(de24, aes(x= variable, y=X, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + aes(y = reorder(X, value)) + xlab("Passage Number") + ylab("Gene")
+heatmap 
+```
+
+```{r}
+library(RColorBrewer)
+library(gplots)
+coul <- brewer.pal(9, "RdBu")
+```
+
+```{r}
+col_fun= colorRamp2(c(-19, 0, 7), c("blue", "white", "red"))
+```
+
+```{r}
+library(ComplexHeatmap)
+Heatmap(mat_3, col=col_fun, cluster_columns = FALSE) 
+```

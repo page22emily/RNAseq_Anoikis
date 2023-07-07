@@ -17,14 +17,19 @@ library(dplyr)
 library(tidyr)
 ```
 
+Option 1: make it with the txdb every time 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
-txdb <- loadDb("C:/Users/empage/Documents/Lab_Stuff/Lab_RNAseq_Tutorial/gencode.v19.annotation.gtf_withproteinids.TxDb")
-
-k <- keys(txdb, keytype = "TXNAME")
-
-tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+#txdb <- loadDb("C:/Users/empage/Documents/Lab_Stuff/Lab_RNAseq_Tutorial/gencode.v19.annotation.gtf_withproteinids.TxDb")
+#k <- keys(txdb, keytype = "TXNAME")
+#tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+#write.csv(tx2gene, "~/RNAseq_Anoikis/OV90/RNAseq/15U/tx2gene_gencode.v19.annotation.gtf_withproteinids.csv")
 ```
 
+Option 2: read it in with csv made previously (this will work so long as the txdb is the same)
+```{r}
+tx2gene <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/tx2gene_gencode.v19.annotation.gtf_withproteinids.csv")
+tx2gene <- tx2gene[ , -1]
+```
 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
 dir <- "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/quants"  #this is a path that you will change. This is the quants folder from Salmon that should be locally on your computer 
@@ -63,6 +68,11 @@ dds <- DESeq(dds)
 ```
 
 ```{r}
+counts <- counts(dds[ , ], normalized = FALSE)
+write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/15U/raw_counts_15U.csv")
+```
+
+```{r}
 counts <- counts(dds[ , ], normalized = TRUE)
 write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/15U/counts_15U.csv")
 ```
@@ -77,22 +87,6 @@ summary(res)
 ```{r echo=FALSE}
 plotMA(res, ylim=c(-2,2))
 ```
-
-annots <- select(org.Hs.eg.db, keys=data, 
-                columns="SYMBOL", keytype="ENSEMBL")
-
-result <- merge(infile, annots, by.x="ENSEMBL", by.y="ENSEMBL")
-
-```{r}
- EnhancedVolcano(res,
-    lab = rownames(res),
-    x = 'log2FoldChange',
-    y = 'pvalue')
-```
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_vs_P1_15U.csv")
-```
-
 You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
 Here is an example template. There's a # in front of it so that it is not running 
 ```{r}
@@ -100,19 +94,8 @@ res_2 <- results(dds, contrast=c("condition","P1.1_15U", "P0_15U"))
 summary(res_2)
 ```
 
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_vs_P11_15U.csv")
-```
-
 ```{r echo=FALSE}
 plotMA(res_2, ylim=c(-2,2))
-```
-
-```{r}
- EnhancedVolcano(res_2,
-    lab = rownames(res_2),
-    x = 'log2FoldChange',
-    y = 'pvalue')
 ```
 
 ```{r}
@@ -120,68 +103,32 @@ res_3 <- results(dds, contrast=c("condition","P1_15U","P1.1_15U"))
 summary(res_3)
 ```
 
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P11_vs_P1_15U.csv")
-```
-
 ```{r echo=FALSE}
 plotMA(res_3, ylim=c(-2,2))
 ```
 
 ```{r}
- EnhancedVolcano(res_3,
-    lab = rownames(res_3),
-    x = 'log2FoldChange',
-    y = 'pvalue')
-```
-
-```{r}
 res_4 <- results(dds, contrast=c("condition","P1_DMSO","P1.1_DMSO"))
 summary(res_4)
+write.csv(res_4, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P11_DMSO.csv")
 ```
-
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P11_vs_P1_DMSO.csv")
-```
-
 ```{r echo=FALSE}
 plotMA(res_4, ylim=c(-2,2))
 ```
 
 ```{r}
- EnhancedVolcano(res_4,
-    lab = rownames(res_4),
-    x = 'log2FoldChange',
-    y = 'pvalue')
-```
-
-```{r}
 res_5 <- results(dds, contrast=c("condition", "P1.1_DMSO", "P0_DMSO"))
 summary(res_5)
+write.csv(res_5, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_P0_DMSO.csv")
 ```
-
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_vs_P11_DMSO.csv")
-```
-
 ```{r echo=FALSE}
 plotMA(res_5, ylim=c(-2,2))
 ```
 
 ```{r}
- EnhancedVolcano(res_5,
-    lab = rownames(res_5),
-    x = 'log2FoldChange',
-    y = 'pvalue')
-```
-
-```{r}
 res_6 <- results(dds, contrast=c("condition", "P1_DMSO", "P0_DMSO"))
 summary(res_6)
-```
-
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_vs_P1_DMSO.csv")
+write.csv(res_6, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P0_DMSO.csv")
 ```
 
 ```{r echo=FALSE}
@@ -189,19 +136,9 @@ plotMA(res_6, ylim=c(-2,2))
 ```
 
 ```{r}
- EnhancedVolcano(res_6,
-    lab = rownames(res_6),
-    x = 'log2FoldChange',
-    y = 'pvalue')
-```
-
-```{r}
 res_7 <- results(dds, contrast=c("condition","P0_15U","P0_DMSO"))
 summary(res_7)
-```
-
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P0_DMSO_vs_15U.csv")
+write.csv(res_7, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_15U_DMSO.csv")
 ```
 
 ```{r echo=FALSE}
@@ -209,19 +146,9 @@ plotMA(res_7, ylim=c(-2,2))
 ```
 
 ```{r}
- EnhancedVolcano(res_7,
-    lab = rownames(res_7),
-    x = 'log2FoldChange',
-    y = 'pvalue')
-```
-
-```{r}
 res_8 <- results(dds, contrast=c("condition","P1_15U","P1_DMSO"))
 summary(res_8)
-```
-
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P1_DMSO_vs_15U.csv")
+write.csv(res_8, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_15U_DMSO.csv")
 ```
 
 ```{r echo=FALSE}
@@ -229,34 +156,14 @@ plotMA(res_8, ylim=c(-2,2))
 ```
 
 ```{r}
- EnhancedVolcano(res_8,
-    lab = rownames(res_8),
-    x = 'log2FoldChange',
-    y = 'pvalue')
-```
-
-```{r}
 res_9 <- results(dds, contrast=c("condition","P1.1_15U","P1.1_DMSO"))
 summary(res_9)
-```
-
-```{r}
-write.csv(res, "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/res_P11_DMSO_vs_15U.csv")
+write.csv(res_9, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_15U_DMSO.csv")
 ```
 
 ```{r echo=FALSE}
 plotMA(res_9, ylim=c(-2,2))
 ```
-
-
-```{r}
- EnhancedVolcano(res_9,
-    lab = rownames(res_9),
-    x = 'log2FoldChange',
-    y = 'pvalue')
-```
-
-
 for the object as a whole  
 ```{r}
 vsd <- vst(dds, blind=FALSE)
