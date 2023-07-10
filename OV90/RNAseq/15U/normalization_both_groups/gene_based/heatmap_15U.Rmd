@@ -3,6 +3,10 @@ title: "heatmaps"
 output: html_document
 date: "2023-07-07"
 ---
+No Scientific notation
+```{r}
+options(scipen = 999)
+```
 
 ```{r}
 library(tidyr)
@@ -36,8 +40,7 @@ P11_15U2 <- P11_15U[P11_15U$padj <= .05 & P11_15U$log2FoldChange >= 1.5, ]
 P11_15U3 <- P11_15U[P11_15U$padj <= .05 & P11_15U$log2FoldChange <= -1.5, ]
 ```
 
-So now we have a data frame for each up and down regulated set in each seq data set 
-Now, we want to combine these and use the information to make a heatmap. 
+So now we have a data frame for each up and down regulated set in each seq data set Now, we want to combine these and use the information to make a heatmap.
 
 ```{r}
 sigGenes <- as.list(c(P0_P1_DMSO2$X, P0_P1_DMSO3$X, P0_15U2$X, P0_15U3$X, P1_15U2$X, P1_15U3$X, P11_15U2$X, P11_15U3$X))
@@ -48,7 +51,7 @@ P0_P1_DMSO_k <-  P0_P1_DMSO[P0_P1_DMSO$X %in% sigGenes, ]
 P0_15U_k <- P0_15U[P0_15U$X %in% sigGenes, ]
 P1_15U_k <- P1_15U[P1_15U$X %in% sigGenes, ]
 P11_15U_k <- P11_15U[P11_15U$X %in% sigGenes, ]
-``` 
+```
 
 ```{r}
 df_heat <- P0_P1_DMSO_k[ , c(1,3)]
@@ -71,9 +74,7 @@ df_heat <- P11_15U_k[ , c(1,3)]
 # First compare wide vs long version
 colnames(df_heat) <- c("X", "P11_15U_LFC")
 deseq2VST_wide4 <- df_heat
-``` 
-
-
+```
 
 ```{r}
 combined3 <- merge(deseq2VST_wide1, deseq2VST_wide2, all.x=TRUE, all= TRUE)
@@ -81,26 +82,25 @@ combined1 <- merge(combined3, deseq2VST_wide3, all.x=TRUE, all= TRUE)
 combined <- merge(combined1, deseq2VST_wide4, all.x=TRUE, all= TRUE)
 ```
 
-
 ```{r}
-mat <- combined
+combined$P0_P1_DMSO_LFC <- as.numeric(combined$P0_P1_DMSO_LFC)
+combined$P0_15U_LFC <- as.numeric(combined$P0_15U_LFC)
+combined$P1_15U_LFC <- as.numeric(combined$P1_15U_LFC)
+combined$P11_15U_LFC <- as.numeric(combined$P11_15U_LFC)
+mat <- as.data.frame(combined)
 mat_num2<- na.omit(mat)
 mat_num3 <- as.matrix(mat_num2)
 mat_3 <- mat_num3[ , -1]
 ```
 
+```{r}
+#write.csv(mat_3, "~/Desktop/mat_3.csv", row.names= FALSE)
+```
 
-```{r}
-as.numeric(mat_3)
-```
-```{r}
-rownames(mat_3) <- NULL
-```
 
 ```{r}
 de24 <- melt(combined, id.vars=c("X"))
 ```
-
 
 ```{r}
 heatmap <- ggplot(de24, aes(x= variable, y=X, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + aes(y = reorder(X, value)) + xlab("Passage Number") + ylab("Gene")
@@ -110,14 +110,21 @@ heatmap
 ```{r}
 library(RColorBrewer)
 library(gplots)
-coul <- brewer.pal(9, "RdBu")
+coul <- brewer.pal(11, "RdBu")
 ```
 
 ```{r}
-col_fun= colorRamp2(c(-19, 0, 7), c("blue", "white", "red"))
+mat_3 <- as.matrix(read.csv("~/Desktop/mat_3.csv"))
 ```
 
 ```{r}
 library(ComplexHeatmap)
-Heatmap(mat_3, col=col_fun, cluster_columns = FALSE) 
+Heatmap(mat_3, col=coul, cluster_columns = TRUE, use_raster= TRUE)
 ```
+```{r}
+ggplot(data = combined, aes(x = P0_15U_LFC, y = P1_15U_LFC)) + geom_point(alpha = 0.5, size=9, stroke=1.4) + geom_vline(xintercept = 0, 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+ggsave("~/Desktop/P0_P1_15U.tiff", plot = last_plot(), width= 49, height= 30, unit= "in") 
+```
+```
+
