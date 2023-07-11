@@ -111,6 +111,7 @@ heatmap
 library(RColorBrewer)
 library(gplots)
 coul <- brewer.pal(11, "RdBu")
+coul2 <- coul + scale_color_brewer(direction = -1)
 ```
 
 ```{r}
@@ -119,12 +120,27 @@ mat_3 <- as.matrix(read.csv("~/Desktop/mat_3.csv"))
 
 ```{r}
 library(ComplexHeatmap)
-Heatmap(mat_3, col=coul, cluster_columns = TRUE, use_raster= TRUE)
+Heatmap(mat_3, col=coul2, cluster_columns = TRUE, use_raster= TRUE)
 ```
 ```{r}
-ggplot(data = combined, aes(x = P0_15U_LFC, y = P1_15U_LFC)) + geom_point(alpha = 0.5, size=9, stroke=1.4) + geom_vline(xintercept = 0, 
+ggplot(data = combined, aes(x = P0_15U_LFC, y = P1_15U_LFC)) + geom_point(alpha = 1, size=1) + geom_vline(xintercept = 0, 
                 color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
-ggsave("~/Desktop/P0_P1_15U.tiff", plot = last_plot(), width= 49, height= 30, unit= "in") 
+ggsave("~/Desktop/P0_P1_15U.tiff", plot = last_plot()) 
 ```
+```{r}
+ggplot(data = combined, aes(x = P0_15U_LFC, y = P0_P1_DMSO_LFC)) + geom_point(alpha = 1, size=1) + geom_vline(xintercept = 0, 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+ggsave("~/Desktop/P0_15U_vs_P0_P1_DMSO.tiff", plot = last_plot()) 
 ```
 
+```{r}
+ggplot(data = combined, aes(x = P1_15U_LFC, y = P0_P1_DMSO_LFC)) + geom_point(alpha = 1, size=1) + geom_vline(xintercept = 0, 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+ggsave("~/Desktop/P1_15U_vs_P0_P1_DMSO.tiff", plot = last_plot()) 
+```
+
+```{r}
+ggplot(data = combined, aes(x = P11_15U_LFC, y = P0_P1_DMSO_LFC)) + geom_point(alpha = 1, size=1) + geom_vline(xintercept = 0, 
+                color = "black", linewidth=1.5) + geom_hline(yintercept=0, color = "black", linewidth=1.5) + theme(legend.key.size = unit(3, 'cm'), legend.text = element_text(size=19), legend.title=element_blank()) + guides(color=guide_legend(ncol=2)) + guides(shape=guide_legend(ncol=2)) + theme(panel.background = element_blank(), panel.grid.major= element_line()) + theme(axis.line = element_line(colour = "black"))
+ggsave("~/Desktop/P11_15U_vs_P0_P1_DMSO.tiff", plot = last_plot()) 
+```
