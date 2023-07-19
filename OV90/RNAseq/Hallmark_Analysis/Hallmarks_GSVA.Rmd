@@ -20,6 +20,7 @@ library(gtools)
 ```{r}
 library(readr)
 counts <- read.csv("~/Downloads/results/all/normalized_counts.csv")
+write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/Hallmark_Analysis/normalized_counts.csv")
 View(counts)
 ```
 
@@ -65,7 +66,7 @@ msigdbr_list = split(x = h_gene_sets$ensembl_gene, f = h_gene_sets$gs_name)
 
 #running GSVA
 ```{r}
-gsva.es <- gsva(counts2, msigdbr_list, method= "ssgsea", verbose=TRUE)
+gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
 ```
 ```{r}
 write.csv (gsva.es, "~/Desktop/Ov90_Hallmarks_res_ssgsea.csv")
@@ -73,13 +74,23 @@ write.csv (gsva.es, "~/Desktop/Ov90_Hallmarks_res_ssgsea.csv")
 
 #heatmap to show the scores 
 ```{r}
-data <- gsva.es
+data <- gsva.es[ , c(1:6, 13:18)]
+```
+
+#THIS IS WITH GSVA
+
+png("test.png",width=3.25,height=3.25,units="in",res=1200)
+
+```{r}
 library(RColorBrewer)
 coul <- brewer.pal(11, "RdBu") 
 coul2 <- coul + scale_color_brewer(direction = -1)
 library(ComplexHeatmap)
-Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
+tiff("heatmap_Ov90_edits_2.tiff",width=13, height=6, units="in",res=10000)
+Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 8), heatmap_legend_param = list(title = " "))
+dev.off()
 ```
+
 
 ```{r}
 de23 <- melt(data, id.vars= rownames(data))
@@ -110,6 +121,7 @@ data_3 <- as.data.frame(data3)
 library(tidyverse)
 ```
 
+#SSGSEA SCORES WERE USED HERE
 
 ```{r}
 data_3 <- data_3 %>% 
