@@ -249,5 +249,45 @@ write.csv(x[["results"]], "~/Desktop/maf_P0_P7_WXS_comparisons.csv")
 forestPlot(mafCompareRes = x, pVal= 0.05, geneFontSize = 0.1)
 ```
 
+```{r}
+mafs <- c("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_2.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_2.mutect2.vep.maf")
+merged_P0_P7 <- merge_mafs(mafs)
+```
+```{r}
+#shows clinical data associated with samples
+getClinicalData(merged_P0_P7)
+```
+
+```{r}
+#Writes maf summary to an output file with basename laml.
+write.mafSummary(maf = merged_P0_P7, basename = 'anoikis_maf')
+```
+
+```{r}
+summary_gene$Hugo_Symbol -> gene_list
+genes <- c("MUC6", "MUC3A", "MUC4", "LILRB1", "HLA-B", "HLA-DRB5", "KIR2DL4", "LILRB2", "MUC12", "MUC16", "LILRA1", "HLA-DRB1",  "HRNR", "LILRA2", "TAS2R31", "TAS2R46", "OR8U1", "KIR2DL1", "PRSS1", "HLA-DQB1", "HLA-A", "HLA-C", "IGHV1-2", "OR9G1")
+genes2 <- c("TRBV3-1", "KIR3DL2", "KIR2DL3", "LILRA4", "ERVW-1", "TUBB8B", "CNN2", "HLA-DQA1", "FCGBP", "GSTT4", "IGLV5-45", "SIRPA", "GOLGA6L2", "PRSS3", "TAS2R19", "IGHV1-69", "ZNF717", "AHNAK2", "IGLV5-48", "MUC20", "SLC25A5", "TAS2R43", "FAM90A23P", "GOLGA6L10", "IGHV3-20")
+genes3 <- c("IGHV3-43", "IGHV4-61", "PABPC3", "PRAMEF18", "HLA-DQA2", "IGHV1-46", "ANKRD36C", "GPRIN2", "IGHV4-31", "RT18", "MICA", "PSPH", "HLA-DPB1", "HLA-DQB2", "HTT", "KRTAP4-11", "LILRA6", "NBPF1", "PABPC1", "GBP4", "LRRC37A3", "OR10G2", "PRAMEF5", "TAS2R30", "KIR3DL1")
+genes4 <- c("CAP1", "CYP2D6", "FRG2C", "IGHV3-48", "IGHV4-59", "KCNJ12", "LILRB3", "MTCH2", "RIMBP3", "TNXB", "AGAP4", "ANKRD36", "PLIN4", "C1orf87", "CRYBG2", "DNAH14", "FAM186A", "FMN2", "GOLGA6L6", "IGHV2-5", "IGHV3-21", "KIR2DS4", "NPIPB11", "OR2T2", "PCDHA4", "PCLO")
+```
 
 
+#oncoplot for top ten mutated genes.
+```{r}
+oncoplot(maf = merged_P0_P7 , top = 20)
+```
+
+```{r}
+coOncoplot(m1 = anoikis_maf_P0, m2 = anoikis_maf_P7, m1Name = 'P0', m2Name = 'P7', genes= genes, removeNonMutated = TRUE)
+```
+```{r}
+coOncoplot(m1 = anoikis_maf_P0, m2 = anoikis_maf_P7, m1Name = 'P0', m2Name = 'P7', genes= genes2, removeNonMutated = TRUE)
+```
+
+```{r}
+coOncoplot(m1 = anoikis_maf_P0, m2 = anoikis_maf_P7, m1Name = 'P0', m2Name = 'P7', genes= genes3, removeNonMutated = TRUE)
+```
+
+```{r}
+coOncoplot(m1 = anoikis_maf_P0, m2 = anoikis_maf_P7, m1Name = 'P0', m2Name = 'P7', genes= genes4, removeNonMutated = TRUE)
+```
