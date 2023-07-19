@@ -5,7 +5,10 @@ date: "2023-05-17"
 ---
 
 Goals: individual passage #s and hallmarks for correlation based on individual time points 
-
+No Scientific notation
+```{r}
+options(scipen = 999)
+```
 ```{r}
 library("GSVA")
 library(tidyr)
@@ -19,10 +22,15 @@ library(gtools)
 
 ```{r}
 library(readr)
-counts <- read.csv("~/Downloads/results/all/normalized_counts.csv")
-write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/Hallmark_Analysis/normalized_counts.csv")
-View(counts)
+#counts <- read.csv("~/Downloads/results/all/normalized_counts.csv")
+#write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/Hallmark_Analysis/normalized_counts.csv")
+counts <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/Hallmark_Analysis/normalized_counts.csv")
 ```
+
+```{r}
+counts <- counts[ , -1]
+```
+
 
 ```{r}
 no_decimals <- gsub('\\.[0-9]*$','',counts$X)
@@ -68,8 +76,9 @@ msigdbr_list = split(x = h_gene_sets$ensembl_gene, f = h_gene_sets$gs_name)
 ```{r}
 gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
 ```
+
 ```{r}
-write.csv (gsva.es, "~/Desktop/Ov90_Hallmarks_res_ssgsea.csv")
+#write.csv (gsva.es, "~/Desktop/Ov90_Hallmarks_res_ssgsea.csv")
 ```
 
 #heatmap to show the scores 
@@ -86,7 +95,7 @@ library(RColorBrewer)
 coul <- brewer.pal(11, "RdBu") 
 coul2 <- coul + scale_color_brewer(direction = -1)
 library(ComplexHeatmap)
-tiff("heatmap_Ov90_edits_2.tiff",width=13, height=6, units="in",res=10000)
+tiff("C:/Users/empage/Documents/heatmap_Ov90_edits_2.tiff",width=13, height=6, units="in",res=5000)
 Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 8), heatmap_legend_param = list(title = " "))
 dev.off()
 ```
