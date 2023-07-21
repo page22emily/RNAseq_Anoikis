@@ -83,7 +83,7 @@ gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
 
 #heatmap to show the scores 
 ```{r}
-data <- gsva.es[ , c(1:6, 13:18)]
+data <- gsva.es[ , c(1:6, 10:18)]
 ```
 
 #THIS IS WITH GSVA
