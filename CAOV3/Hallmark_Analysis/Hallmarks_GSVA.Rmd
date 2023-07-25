@@ -13,7 +13,7 @@ library("GSVA")
 
 ```{r}
 library(readr)
-counts <- read.csv("~/Documents/Mythreye_Lab/anoikis/CAOV3/results/counts_CAOV3.csv")
+counts <- read.csv("~/Documents/Mythreye_Lab/Anoikis_Project/Bulk_RNA/CAOV3/DESeq2/counts_CAOV3.csv")
 View(counts)
 ```
 
@@ -80,7 +80,9 @@ heatmap(data, Colv= NA, col= coul2, cexRow= .4)
 
 ```{r}
 library(ComplexHeatmap)
+pdf("~/Desktop/heatmap_hallmarks_CAOV3_edits_2.pdf",width=8, height=11)
 Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4))
+dev.off()
 ```
 
 ```{r}

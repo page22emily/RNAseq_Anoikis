@@ -27,8 +27,8 @@ tx2gene <- select(txdb, k, "GENEID", "TXNAME")
 
 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
-dir <- "~/Documents/Mythreye_Lab/quants_CAOV3_k31/"  #this is a path that you will change. This is the quants folder from Salmon that should be locally on your computer 
-samples <- read.csv(file= "~/Documents/Mythreye_Lab/anoikis/CAOV3/meta_CAOV3.csv") #CSV is a metadata file. A sample of this file is on github 
+dir <- "~/Documents/Mythreye_Lab/Anoikis_Project/Deseq2_requirements/quants_CAOV3_k31/"  #this is a path that you will change. This is the quants folder from Salmon that should be locally on your computer 
+samples <- read.csv(file= "~/Documents/Mythreye_Lab/Anoikis_Project/Bulk_RNA/CAOV3/meta_CAOV3.csv") #CSV is a metadata file. A sample of this file is on github 
 files <- file.path(dir, samples$Sample, "quant.sf")
 all(file.exists(files))
 ```
@@ -42,7 +42,7 @@ names(txi)
 
 This is for setting up the meta data and DESeq2 object so that you can do your analysis 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
-sample_meta_data <- read.csv(file= "~/Documents/Mythreye_Lab/anoikis/CAOV3/meta_CAOV3.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
+sample_meta_data <- read.csv(file= "~/Documents/Mythreye_Lab/Anoikis_Project/Bulk_RNA/CAOV3/meta_CAOV3.csv") #this is a DIFFERENT meta data file. Example in github. Include any information in this that you want to compare between samples
 sampleFiles <- samples$Sample
 sampleCondition <- sample_meta_data$Time_Point #this one you can change to whatever column you want in your meta data for comparisons 
 sampleTable <- data.frame(sampleName = sampleFiles,
@@ -66,7 +66,7 @@ dds <- DESeq(dds)
 
 ```{r}
 counts <- counts(dds[ , ], normalized = TRUE)
-write.csv(counts, "~/Documents/Mythreye_Lab/anoikis/CAOV3/results/counts_CAOV3.csv")
+write.csv(counts, "~/Documents/Mythreye_Lab/Anoikis_Project/Bulk_RNA/CAOV3/DESeq2/counts_CAOV3.csv")
 ```
 
 This is going to tell you information about the results from running DESeq2 
