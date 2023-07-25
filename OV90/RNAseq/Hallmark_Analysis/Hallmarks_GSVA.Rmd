@@ -95,7 +95,7 @@ library(RColorBrewer)
 coul <- brewer.pal(11, "RdBu") 
 coul2 <- coul + scale_color_brewer(direction = -1)
 library(ComplexHeatmap)
-pdf("C:/Users/empage/Documents/heatmap_Ov90_edits_2.pdf",width=8, height=11)
+pdf("C:/Users/empage/Documents/heatmap_hallmarks_Ov90.pdf",width=8, height=11)
 Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 8), heatmap_legend_param = list(title = " "))
 dev.off()
 ```
