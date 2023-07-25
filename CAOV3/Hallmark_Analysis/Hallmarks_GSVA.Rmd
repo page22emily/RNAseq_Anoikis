@@ -59,11 +59,11 @@ msigdbr_list = split(x = h_gene_sets$ensembl_gene, f = h_gene_sets$gs_name)
 
 #running GSVA
 ```{r}
-gsva.es <- gsva(counts2, msigdbr_list, method= "ssgsea", verbose=TRUE)
+gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
 ```
 
 ```{r}
-write.csv(gsva.es, "~/Desktop/CAOV3_Hallmarks_res_ssgsea.csv")
+write.csv(gsva.es, "~/Desktop/CAOV3_Hallmarks_res_GSVA.csv")
 ```
 
 #heatmap to show the scores 
