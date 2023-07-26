@@ -78,7 +78,7 @@ gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
 ```
 
 ```{r}
-#write.csv (gsva.es, "~/Desktop/Ov90_Hallmarks_res_ssgsea.csv")
+write.csv (gsva.es, "~/Desktop/Ov90_Hallmarks_res_GSVA.csv")
 ```
 
 #heatmap to show the scores 

@@ -22,7 +22,7 @@ These steps will only be to see what is happening for each time point. No compar
 
 #P0
 ```{r}
-mafs <- c("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_2.mutect2.vep.maf")
+mafs <- c("~/Documents/Mythreye_Lab/Anoikis_Project/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/Anoikis_Project/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_2.mutect2.vep.maf")
 anoikis_maf_P0 <- merge_mafs(mafs)
 ```
 
@@ -77,7 +77,7 @@ x + scale_x_continuous(limits = c(0.0 , 1.5))
 
 #P1
 ```{r}
-mafs <- c("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P1_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P1_2.mutect2.vep.maf")
+mafs <- c("~/Documents/Mythreye_Lab/Anoikis_Project/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P1_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/Anoikis_Project/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P1_2.mutect2.vep.maf")
 anoikis_maf <- merge_mafs(mafs)
 ```
 
@@ -131,7 +131,7 @@ plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = TRUE, labelSize = 0
 
 #P4
 ```{r}
-mafs <- c("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P4_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P4_2.mutect2.vep.maf")
+mafs <- c("~/Documents/Mythreye_Lab/Anoikis_Project/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P4_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/Anoikis_Project/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P4_2.mutect2.vep.maf")
 anoikis_maf <- merge_mafs(mafs)
 ```
 
@@ -185,7 +185,7 @@ plotOncodrive(res = laml.sig, fdrCutOff = 0.1, useFraction = TRUE, labelSize = 0
 
 #P7
 ```{r}
-mafs <- c("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_2.mutect2.vep.maf")
+mafs <- c("~/Documents/Mythreye_Lab/Anoikis_Project/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/Anoikis_Project/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_2.mutect2.vep.maf")
 anoikis_maf_P7 <- merge_mafs(mafs)
 ```
 

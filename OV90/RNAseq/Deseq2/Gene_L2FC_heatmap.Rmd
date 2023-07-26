@@ -369,7 +369,7 @@ coul2 <- coul + scale_color_brewer(direction = -1)
 
 ```{r}
 library(ComplexHeatmap)
-pdf("~/Desktop/heatmap_Ov90_edits_2.pdf",width=8, height=11)
+pdf("~/Desktop/heatmap_Ov90_Gene.pdf",width=8, height=11)
 Heatmap(mat_num4, col = coul2, cluster_columns = FALSE, use_raster= FALSE) 
 dev.off()
 ```
