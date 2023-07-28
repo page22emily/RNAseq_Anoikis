@@ -25,12 +25,15 @@ Column of interest will be labeled as Group
 
 ```{r}
 P0_vs_P1 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P1_vs_P0.csv")
+P0_vs_P3 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P3_vs_P0.csv")
 P0_vs_P4 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P4_vs_P0.csv")
 P0_vs_P7 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P7_vs_P0.csv")
 P0_vs_P6 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P6_vs_P0.csv")
 
 no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P1$X)
 P0_vs_P1$X <- no_decimals
+no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P3$X)
+P0_vs_P3$X <- no_decimals
 no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P4$X)
 P0_vs_P4$X <- no_decimals
 no_decimals <- gsub('\\.[0-9]*$','', P0_vs_P6$X)
@@ -42,6 +45,7 @@ P0_vs_P7$X <- no_decimals
 those are the raw files. we need to make the only significant ones present 
 ```{r}
 P0_P1_adj <- na.omit(P0_vs_P1)
+P0_P3_adj <- na.omit(P0_vs_P3)
 P0_P4_adj <- na.omit(P0_vs_P4)
 P0_P7_adj <- na.omit(P0_vs_P7)
 P0_P6_adj <- na.omit(P0_vs_P6)
@@ -49,6 +53,7 @@ P0_P6_adj <- na.omit(P0_vs_P6)
 
 ```{r}
 P0_P1_adj2 <- P0_P1_adj[P0_P1_adj$padj <= .05, ]
+P0_P3_adj2 <- P0_P3_adj[P0_P3_adj$padj <= .05, ]
 P0_P4_adj2 <- P0_P4_adj[P0_P4_adj$padj <= .05, ]
 P0_P7_adj2 <- P0_P7_adj[P0_P7_adj$padj <= .05, ]
 P0_P6_adj2 <- P0_P6_adj[P0_P6_adj$padj <= .05, ]
@@ -68,6 +73,17 @@ P0_P1_Annotations <- add_column(P0_P1_Annotations %>%
 P0_P1_Annotations <- add_column(P0_P1_Annotations %>%
   mutate(Up = if_else( log2FoldChange >= 1.5, TRUE, FALSE), .after="Down"))
 P0_P1_Annotations <- add_column(P0_P1_Annotations %>%
+  mutate(NC = if_else(between(log2FoldChange, -1.5 , 1.5), TRUE, FALSE), .after="Up"))
+```
+
+```{r}
+P0_P3_Annotations <- add_column(P0_P3_adj2 %>%
+  mutate(Gene_Annotation = case_when(log2FoldChange <= -1.5 ~ "Down Regulated", log2FoldChange >= 1.5 ~ "Up Regulated", between(log2FoldChange, -1.5 , 1.5) ~ "No Change")))
+P0_P3_Annotations <- add_column(P0_P3_Annotations %>%
+  mutate(Down = if_else(log2FoldChange <= -1.5, TRUE, FALSE), .after="Gene_Annotation"))
+P0_P3_Annotations <- add_column(P0_P3_Annotations %>%
+  mutate(Up = if_else( log2FoldChange >= 1.5, TRUE, FALSE), .after="Down"))
+P0_P3_Annotations <- add_column(P0_P3_Annotations %>%
   mutate(NC = if_else(between(log2FoldChange, -1.5 , 1.5), TRUE, FALSE), .after="Up"))
 ```
 
@@ -109,6 +125,9 @@ P0_P7_Annotations <- add_column(P0_P7_Annotations %>%
 P1_Up <- P0_P1_Annotations[ , c(1,10)]
 P1_Down <- P0_P1_Annotations[ , c(1,9)]
 P1_NC <- P0_P1_Annotations[ , c(1,11)]
+P3_Up <- P0_P3_Annotations[ , c(1,10)]
+P3_Down <- P0_P3_Annotations[ , c(1,9)]
+P3_NC <- P0_P3_Annotations[ , c(1,11)]
 P4_Up <- P0_P4_Annotations[ , c(1,10)]
 P4_Down <- P0_P4_Annotations[ , c(1,9)]
 P4_NC <- P0_P4_Annotations[ , c(1,11)]
@@ -121,6 +140,9 @@ P7_NC <- P0_P7_Annotations[ , c(1,11)]
 colnames(P1_Up) <- c("gene_id", "P0_vs_P1")
 colnames(P1_Down) <- c("gene_id", "P0_vs_P1")
 colnames(P1_NC) <- c("gene_id", "P0_vs_P1")
+colnames(P3_Up) <- c("gene_id", "P0_vs_P3")
+colnames(P3_Down) <- c("gene_id", "P0_vs_P3")
+colnames(P3_NC) <- c("gene_id", "P0_vs_P3")
 colnames(P4_Up) <- c("gene_id", "P0_vs_P4")
 colnames(P4_Down) <- c("gene_id", "P0_vs_P4")
 colnames(P4_NC) <- c("gene_id", "P0_vs_P4")
@@ -133,21 +155,24 @@ colnames(P7_NC) <- c("gene_id", "P0_vs_P7")
 ```
 
 ```{r}
-Up_Genes1 <- merge(P1_Up, P4_Up, all.x=TRUE, all= TRUE)
-Up_Genes2 <- merge(Up_Genes1, P6_Up, all.x=TRUE, all= TRUE)
-Up_Genes<- merge(Up_Genes2, P7_Up, all.x=TRUE, all= TRUE)
+Up_Genes1 <- merge(P1_Up, P3_Up, all.x=TRUE, all= TRUE)
+Up_Genes2 <- merge(Up_Genes1, P4_Up, all.x=TRUE, all= TRUE)
+Up_Genes3 <- merge(Up_Genes2, P6_Up, all.x=TRUE, all= TRUE)
+Up_Genes<- merge(Up_Genes3, P7_Up, all.x=TRUE, all= TRUE)
 ```
 
 ```{r}
-Down_Genes1 <- merge(P1_Down, P4_Down, all.x=TRUE, all= TRUE)
-Down_Genes2 <- merge(Down_Genes1, P6_Down, all.x=TRUE, all= TRUE)
-Down_Genes<- merge(Down_Genes2, P7_Down, all.x=TRUE, all= TRUE)
+Down_Genes1 <- merge(P1_Down, P3_Down, all.x=TRUE, all= TRUE)
+Down_Genes2 <- merge(Down_Genes1, P4_Down, all.x=TRUE, all= TRUE)
+Down_Genes3 <- merge(Down_Genes2, P6_Down, all.x=TRUE, all= TRUE)
+Down_Genes<- merge(Down_Genes3, P7_Down, all.x=TRUE, all= TRUE)
 ```
 
 ```{r}
-NC_Genes1 <- merge(P1_NC, P4_NC, all.x=TRUE, all= TRUE)
-NC_Genes2 <- merge(NC_Genes1, P6_NC, all.x=TRUE, all= TRUE)
-NC_Genes<- merge(NC_Genes2, P7_NC, all.x=TRUE, all= TRUE)
+NC_Genes1 <- merge(P1_NC, P3_NC, all.x=TRUE, all= TRUE)
+NC_Genes2 <- merge(NC_Genes1, P4_NC, all.x=TRUE, all= TRUE)
+NC_Genes3 <- merge(NC_Genes2, P6_NC, all.x=TRUE, all= TRUE)
+NC_Genes<- merge(NC_Genes3, P7_NC, all.x=TRUE, all= TRUE)
 ```
 
 ```{r}
@@ -173,45 +198,24 @@ library(ComplexUpset)
 
 #THIS WORKED TO MAKE THE RIGHT DATASET. Hopefully 
 ```{r}
-Group <- colnames(up)[c(2:5)]
+Group <- colnames(up)[c(2:6)]
 Group
 ```
 
 ```{r}
 upset(up, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
-ggsave("~/Desktop/Up_OV90_fullset.tiff", last_plot())
+ggsave("~/Desktop/Up_OV90_fullset.pdf", last_plot())
 ```
 
 ```{r}
 upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Down Regulated Genes")
-ggsave("~/Desktop/Down_OV90_fullset.tiff", last_plot())
+ggsave("~/Desktop/Down_OV90_fullset.pdf", last_plot())
 ```
 
 ```{r}
 upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Genes with No Significant Change")
-ggsave("~/Desktop/NC_OV90_fullset.tiff", last_plot())
+ggsave("~/Desktop/NC_OV90_fullset.pdf", last_plot())
 ```
-
-```{r}
-Group <- colnames(up)[c(2, 4:5)]
-Group
-```
-
-```{r}
-upset(up, Group, min_degree=1,sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle('Up Regulated Genes') 
-ggsave("~/Desktop/Up_OV90_no_P4set.tiff", last_plot())
-```
-
-```{r}
-upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Down Regulated Genes")
-ggsave("~/Desktop/Down_OV90_no_P4set.tiff", last_plot())
-```
-
-```{r}
-upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending") + ggtitle("Genes with No Significant Change")
-ggsave("~/Desktop/NC_OV90_no_P4set.tiff", last_plot())
-```
-
 
 ```{r}
 Group <- colnames(up)[c(2:5)]
@@ -231,25 +235,4 @@ ggsave("~/Desktop/Down_OV90_fullset_no_labels.tiff", last_plot())
 ```{r}
 upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Genes with No Significant Change")
 ggsave("~/Desktop/NC_OV90_fullset_no_labels.tiff", last_plot())
-```
-
-
-```{r}
-Group <- colnames(up)[c(2, 4:5)]
-Group
-```
-
-```{r}
-upset(up, Group, min_degree=1,sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle('Up Regulated Genes') 
-ggsave("~/Desktop/Up_OV90_no_P4set_no_labels.tiff", last_plot())
-```
-
-```{r}
-upset(down, Group,  min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Down Regulated Genes")
-ggsave("~/Desktop/Down_OV90_no_P4set_no_labels.tiff", last_plot())
-```
-
-```{r}
-upset(nc, Group, min_degree=1, sort_sets= FALSE, sort_intersections_by='degree', sort_intersections= "ascending", base_annotations= list('Size'=(intersection_size(counts=FALSE)))) + ggtitle("Genes with No Significant Change")
-ggsave("~/Desktop/NC_OV90_no_P4set_no_labels.tiff", last_plot())
 ```
