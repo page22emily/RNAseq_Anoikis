@@ -255,7 +255,7 @@ ggsave("~/Desktop/CAOV3_P0_vs_P7_separated_heatmap.png", plot = last_plot(), wid
 ```
 
 ```{r}
-combined <- rbind(de21, de2, de22, de23)
+combined_CAOV3 <- rbind(de21, de2, de22, de23)
 ```
 
 ```{r}

@@ -9,6 +9,7 @@ No Scientific notation
 ```{r}
 options(scipen = 999)
 ```
+
 ```{r}
 library("GSVA")
 library(tidyr)
@@ -83,7 +84,7 @@ write.csv (gsva.es, "~/Desktop/Ov90_Hallmarks_res_GSVA.csv")
 
 #heatmap to show the scores 
 ```{r}
-data <- gsva.es[ , c(1:6, 10:18)]
+data <- gsva.es[ , ]
 ```
 
 #THIS IS WITH GSVA
@@ -95,11 +96,10 @@ library(RColorBrewer)
 coul <- brewer.pal(11, "RdBu") 
 coul2 <- coul + scale_color_brewer(direction = -1)
 library(ComplexHeatmap)
-pdf("C:/Users/empage/Documents/heatmap_hallmarks_Ov90.pdf",width=8, height=11)
+pdf("~/Desktop/heatmap_hallmarks_Ov90.pdf",width=8, height=11)
 Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 8), heatmap_legend_param = list(title = " "))
 dev.off()
 ```
-
 
 ```{r}
 de23 <- melt(data, id.vars= rownames(data))

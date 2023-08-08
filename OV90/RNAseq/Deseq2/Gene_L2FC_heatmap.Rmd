@@ -24,6 +24,7 @@ Need to download the data in
 ~/Desktop/OV90_Outputs/DESeq2
 ```{r}
 P0_P1 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P1_vs_P0.csv")
+P0_P3 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P3_vs_P0.csv")
 P0_P4 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P4_vs_P0.csv")
 P0_P6 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P6_vs_P0.csv")
 P0_P7 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P7_vs_P0.csv")
@@ -31,6 +32,7 @@ P0_P7 <- read.csv("~/Desktop/OV90_Outputs/DESeq2/P7_vs_P0.csv")
 
 ```{r}
 P0_P1_adj <- na.omit(P0_P1)
+P0_P3_adj <- na.omit(P0_P3)
 P0_P4_adj <- na.omit(P0_P4)
 P0_P6_adj <- na.omit(P0_P6)
 P0_P7_adj <- na.omit(P0_P7)
@@ -39,6 +41,9 @@ P0_P7_adj <- na.omit(P0_P7)
 ```{r}
 P0_P1_adj2 <- P0_P1_adj[P0_P1_adj$padj <= .05 & P0_P1_adj$log2FoldChange >= 1.5, ]
 P0_P1_adj3 <- P0_P1_adj[P0_P1_adj$padj <= .05 & P0_P1_adj$log2FoldChange <= -1.5, ]
+
+P0_P3_adj2 <- P0_P3_adj[P0_P3_adj$padj <= .05 & P0_P3_adj$log2FoldChange >= 1.5, ]
+P0_P3_adj3 <- P0_P3_adj[P0_P3_adj$padj <= .05 & P0_P3_adj$log2FoldChange <= -1.5, ]
 
 P0_P4_adj2 <- P0_P4_adj[P0_P4_adj$padj <= .05 & P0_P4_adj$log2FoldChange >= 1.5, ]
 P0_P4_adj3 <- P0_P4_adj[P0_P4_adj$padj <= .05 & P0_P4_adj$log2FoldChange <= -1.5, ]
@@ -54,7 +59,7 @@ So now we have a data frame for each up and down regulated set in each seq data 
 Now, we want to combine these and use the information to make a heatmap. 
 
 ```{r}
-sigGenes <- as.list(c(P0_P1_adj2$X, P0_P1_adj3$X, P0_P4_adj2$X, P0_P4_adj3$X, P0_P7_adj2$X, P0_P7_adj3$X, P0_P6_adj2$X, P0_P6_adj3$X))
+sigGenes <- as.list(c(P0_P1_adj2$X, P0_P1_adj3$X, P0_P4_adj2$X, P0_P4_adj3$X, P0_P7_adj2$X, P0_P7_adj3$X, P0_P6_adj2$X, P0_P6_adj3$X, P0_P3_adj2$X, P0_P3_adj3$X))
 counts <- read.csv("~/Downloads/results/all/normalized_counts.csv")
 ```
 
@@ -74,6 +79,13 @@ counts_P1 <- as.data.frame(counts_P1)
 counts_P1_averages <- rowMeans(counts_P1)
 ```
 
+```{r}
+counts_P3 <- counts[ , 8:10]
+rownames(counts_P3) <- counts$X
+colnames(counts_P3) <- c("One", "two", "three")
+counts_P3 <- as.data.frame(counts_P3)
+counts_P3_averages <- rowMeans(counts_P3)
+```
 
 ```{r}
 counts_P4 <- counts[ , 11:13]
@@ -169,12 +181,39 @@ deseq2VST_wide1 <- df_heat
 de2 <- melt(df_heat, id.vars=c("gene"))
 ```
 
+#P3
 ```{r}
-heatmap <- ggplot(de2, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
-heatmap
+df <- data.frame(counts_P0_average)
 ```
+
 ```{r}
-ggsave("~/Desktop/OV90_P0_vs_P1_separated_heatmap.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
+df$P01 <- counts_P3$One
+df$P02 <- counts_P3$two
+df$P03 <- counts_P3$three
+df$LC_1 <- foldchange(df$P01, df$counts_P0_average) 
+df$P3A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_P0_average)
+df$P3B<- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_P0_average)
+df$P3C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide15 <- df_heat
+de25 <- melt(df_heat, id.vars=c("gene"))
 ```
 
 #P4 
@@ -214,15 +253,6 @@ deseq2VST_wide4 <- df_heat
 de22 <- melt(df_heat, id.vars=c("gene"))
 ```
 
-```{r}
-heatmap <- ggplot(de22, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
-heatmap
-```
-
-```{r}
-ggsave("~/Desktop/OV90_P0_vs_P4_separated_heatmap.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
-```
-
 #P6
 ```{r}
 df <- data.frame(counts_P0_average)
@@ -258,15 +288,6 @@ df_heat <- df_tokeep[ , c(6,8,10,11)]
 # First compare wide vs long version
 deseq2VST_wide6 <- df_heat
 de23 <- melt(df_heat, id.vars=c("gene"))
-```
-
-```{r}
-heatmap <- ggplot(de23, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
-heatmap
-```
-
-```{r}
-ggsave("~/Desktop/OV90_P0_vs_P6_separated_heatmap.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
 ```
 
 #P7
@@ -307,17 +328,7 @@ de24 <- melt(df_heat, id.vars=c("gene"))
 ```
 
 ```{r}
-heatmap <- ggplot(de24, aes(x= variable, y=gene, fill=value)) + geom_raster() + scale_fill_viridis(discrete= FALSE) + theme(axis.text.x=element_text(angle=65, hjust=1), axis.text.y=element_blank(), axis.ticks.y=element_blank())
-heatmap
-```
-
-```{r}
-ggsave("~/Desktop/OV90_P0_vs_P7_separated_heatmap.png", plot = last_plot(), width = 10, height = 12, units = c("in"))
-```
-
-
-```{r}
-combined <- rbind(de21, de2, de22, de23, de24)
+combined <- rbind(de21, de2, de25, de22, de23, de24)
 ```
 
 ```{r}
@@ -330,7 +341,8 @@ ggsave("~/Desktop/OV90_separated_heatmap_multiple_tp.png", plot = last_plot(), w
 ```
 
 ```{r}
-combined3 <- merge(deseq2VST_wide01, deseq2VST_wide1, all.x=TRUE, all= TRUE)
+combined4 <- merge(deseq2VST_wide01, deseq2VST_wide1, all.x=TRUE, all= TRUE)
+combined3 <- merge (combined4, deseq2VST_wide15, all.x=TRUE, all= TRUE)
 combined1 <- merge(combined3, deseq2VST_wide4, all.x=TRUE, all= TRUE)
 combined2 <- merge(combined1, deseq2VST_wide6, all.x=TRUE, all= TRUE)
 combined <- merge(combined2, deseq2VST_wide7, all.x=TRUE, all= TRUE)
@@ -345,7 +357,8 @@ library(readr)
 combined_redo <- read_csv("~/Desktop/combined.csv", 
     col_types = cols(...1 = col_number(), 
         gene = col_number(), P1A = col_number(), 
-        P1B = col_number(), P1C = col_number(), 
+        P1B = col_number(), P1C = col_number(), P3A = col_number(), 
+        P3B = col_number(), P3C = col_number(), 
         P4A = col_number(), P4B = col_number(), P4C = col_number(), P6A = col_number(), P6B = col_number(), P6C = col_number(),P7A = col_number(), P7B = col_number(), P7C = col_number()))
 mat <- combined_redo[  , -2]
 ```

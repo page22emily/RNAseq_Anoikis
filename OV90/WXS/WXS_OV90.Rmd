@@ -245,9 +245,6 @@ x <- mafCompare(anoikis_maf_P0, anoikis_maf_P7, m1Name="P0", m2Name="P7", minMut
 write.csv(x[["results"]], "~/Desktop/maf_P0_P7_WXS_comparisons.csv")
 ```
 
-```{r}
-forestPlot(mafCompareRes = x, pVal= 0.05, geneFontSize = 0.1)
-```
 
 ```{r}
 mafs <- c("~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P0_2.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_1.mutect2.vep.maf", "~/Documents/Mythreye_Lab/anoikis/Mehri_Resha/anoikis/ovarian_cancer_somatic_variants_mafs/WXS/P7_2.mutect2.vep.maf")
@@ -278,16 +275,25 @@ oncoplot(maf = merged_P0_P7 , top = 20)
 ```
 
 ```{r}
+pdf("~/Desktop/oncoplot_Ov90_1.pdf",width=11, height=8)
 coOncoplot(m1 = anoikis_maf_P0, m2 = anoikis_maf_P7, m1Name = 'P0', m2Name = 'P7', genes= genes, removeNonMutated = TRUE)
+dev.off()
 ```
+
 ```{r}
+pdf("~/Desktop/oncoplot_Ov90_2.pdf",width=11, height=8)
 coOncoplot(m1 = anoikis_maf_P0, m2 = anoikis_maf_P7, m1Name = 'P0', m2Name = 'P7', genes= genes2, removeNonMutated = TRUE)
+dev.off()
 ```
 
 ```{r}
+pdf("~/Desktop/oncoplot_Ov90_3.pdf",width=11, height=8)
 coOncoplot(m1 = anoikis_maf_P0, m2 = anoikis_maf_P7, m1Name = 'P0', m2Name = 'P7', genes= genes3, removeNonMutated = TRUE)
+dev.off()
 ```
 
 ```{r}
+pdf("~/Desktop/oncoplot_Ov90_4.pdf",width=11, height=8)
 coOncoplot(m1 = anoikis_maf_P0, m2 = anoikis_maf_P7, m1Name = 'P0', m2Name = 'P7', genes= genes4, removeNonMutated = TRUE)
+dev.off()
 ```
