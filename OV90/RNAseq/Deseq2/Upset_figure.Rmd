@@ -158,7 +158,7 @@ colnames(P7_NC) <- c("gene_id", "P0_vs_P7")
 Up_Genes1 <- merge(P1_Up, P3_Up, all.x=TRUE, all= TRUE)
 Up_Genes2 <- merge(Up_Genes1, P4_Up, all.x=TRUE, all= TRUE)
 Up_Genes3 <- merge(Up_Genes2, P6_Up, all.x=TRUE, all= TRUE)
-Up_Genes<- merge(Up_Genes3, P7_Up, all.x=TRUE, all= TRUE)
+Up_Genes <- merge(Up_Genes3, P7_Up, all.x=TRUE, all= TRUE)
 ```
 
 ```{r}

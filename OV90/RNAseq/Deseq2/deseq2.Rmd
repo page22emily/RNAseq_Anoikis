@@ -89,6 +89,18 @@ res_5 <- results(dds, contrast=c("condition","3.3","0"))
 write.csv(res_5,"~/Desktop/P3_vs_P0.csv")
 ```
 
+```{r}
+res_6 <- results(dds, contrast=c("condition","4","3.3"))
+
+write.csv(res_6,"~/Desktop/P3_vs_P4.csv")
+```
+
+```{r}
+res_7 <- results(dds, contrast=c("condition","7","6.6"))
+
+write.csv(res_7,"~/Desktop/P6_vs_P7.csv")
+```
+
 This is all for the comparison of 0 vs 7 
 
 ```{r echo=FALSE}

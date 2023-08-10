@@ -13,7 +13,7 @@ library("GSVA")
 
 ```{r}
 library(readr)
-counts <- read.csv("~/Documents/Mythreye_Lab/Anoikis_Project/Bulk_RNA/CAOV3/DESeq2/counts_CAOV3.csv")
+counts <- read.csv("~/Desktop/STAR_aligned_CAOV3/normalized_counts_CAOV3.csv")
 View(counts)
 ```
 
@@ -66,17 +66,12 @@ gsva.es <- gsva(counts2, msigdbr_list, method= "gsva", verbose=TRUE)
 write.csv(gsva.es, "~/Desktop/CAOV3_Hallmarks_res_GSVA.csv")
 ```
 
+
 #heatmap to show the scores 
 ```{r}
 data <- gsva.es
 ```
 
-```{r}
-library(RColorBrewer)
-coul <- brewer.pal(13, "RdBu") 
-coul2 <- coul + scale_color_brewer(direction = -1)
-heatmap(data, Colv= NA, col= coul2, cexRow= .4) 
-```
 
 ```{r}
 library(ComplexHeatmap)
@@ -90,6 +85,8 @@ library(ggplot2)
 ```
 
 ```{r}
+gsva.es <- gsva(counts2, msigdbr_list, method= "ssgsea", verbose=TRUE)
+data <- gsva.es
 data2 <- data[ c(7, 36) , ]
 data3 <- t(data2)
 rownames(data3) <- colnames(data2)
