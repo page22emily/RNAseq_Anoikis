@@ -20,7 +20,7 @@ library(org.Hs.eg.db)
 
 ```{r}
 library(readr)
-counts <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/counts/counts_15U.csv")
+counts <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalized_counts_15U.csv")
 View(counts)
 ```
 
@@ -86,5 +86,7 @@ library(RColorBrewer)
 coul <- brewer.pal(11, "RdBu") 
 coul2 <- coul + scale_color_brewer(direction = -1)
 library(ComplexHeatmap)
+pdf("~/Desktop/heatmap_hallmarks_15U.pdf",width=8, height=11)
 Heatmap(data, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), )
+dev.off()
 ```
