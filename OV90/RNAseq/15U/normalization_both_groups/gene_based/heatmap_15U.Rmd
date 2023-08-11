@@ -96,18 +96,18 @@ counts_D1_averages <- rowMeans(counts_D1)
 ```
 
 ```{r}
-df <- data.frame(counts_D0_average)
+df <- data.frame(counts_D1_averages)
 ```
 
 ```{r}
 df$P01 <- counts_D1$One
 df$P02 <- counts_D1$two
 df$P03 <- counts_D1$three
-df$LC_1 <- foldchange(df$P01, df$counts_D0_average) 
+df$LC_1 <- foldchange(df$P01, df$counts_D1_averages) 
 df$D1A <- foldchange2logratio(df$LC_1, base = 2)
-df$LC_2 <- foldchange(df$P02, df$counts_D0_average)
+df$LC_2 <- foldchange(df$P02, df$counts_D1_averages)
 df$D1B<- foldchange2logratio(df$LC_2, base = 2)
-df$LC_3 <- foldchange(df$P03, df$counts_D0_average)
+df$LC_3 <- foldchange(df$P03, df$counts_D1_averages)
 df$D1C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
@@ -134,22 +134,22 @@ counts_D11 <- counts[ , 8:10]
 rownames(counts_D11) <- counts$X
 colnames(counts_D11) <- c("One", "two", "three")
 counts_D11 <- as.data.frame(counts_D11)
-counts_D11_averages <- rowMeans(counts_D11)
+counts_D11_average <- rowMeans(counts_D11)
 ```
 
 ```{r}
-df <- data.frame(counts_D0_average)
+df <- data.frame(counts_D11_average)
 ```
 
 ```{r}
 df$P01 <- counts_D11$One
 df$P02 <- counts_D11$two
 df$P03 <- counts_D11$three
-df$LC_1 <- foldchange(df$P01, df$counts_D0_average) 
+df$LC_1 <- foldchange(df$P01, df$counts_D11_average) 
 df$D11A <- foldchange2logratio(df$LC_1, base = 2)
-df$LC_2 <- foldchange(df$P02, df$counts_D0_average)
+df$LC_2 <- foldchange(df$P02, df$counts_D11_average)
 df$D11B<- foldchange2logratio(df$LC_2, base = 2)
-df$LC_3 <- foldchange(df$P03, df$counts_D0_average)
+df$LC_3 <- foldchange(df$P03, df$counts_D11_average)
 df$D11C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
@@ -180,18 +180,18 @@ counts_U0_average<- rowMeans(counts_U0)
 ```
 
 ```{r}
-df <- data.frame(counts_U0_average)
+df <- data.frame(counts_D0_average)
 ```
 
 ```{r}
 df$P01 <- counts_U0$One
 df$P02 <- counts_U0$two
 df$P03 <- counts_U0$three
-df$LC_1 <- foldchange(df$P01, df$counts_U0_average) 
+df$LC_1 <- foldchange(df$P01, df$counts_D0_average) 
 df$U0A <- foldchange2logratio(df$LC_1, base = 2)
-df$LC_2 <- foldchange(df$P02, df$counts_U0_average)
+df$LC_2 <- foldchange(df$P02, df$counts_D0_average)
 df$U0B<- foldchange2logratio(df$LC_2, base = 2)
-df$LC_3 <- foldchange(df$P03, df$counts_U0_average)
+df$LC_3 <- foldchange(df$P03, df$counts_D0_average)
 df$U0C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
@@ -222,18 +222,18 @@ counts_U1_average<- rowMeans(counts_U1)
 ```
 
 ```{r}
-df <- data.frame(counts_U0_average)
+df <- data.frame(counts_D1_averages)
 ```
 
 ```{r}
 df$P01 <- counts_U1$One
 df$P02 <- counts_U1$two
 df$P03 <- counts_U1$three
-df$LC_1 <- foldchange(df$P01, df$counts_U0_average) 
+df$LC_1 <- foldchange(df$P01, df$counts_D1_averages) 
 df$U1A <- foldchange2logratio(df$LC_1, base = 2)
-df$LC_2 <- foldchange(df$P02, df$counts_U0_average)
+df$LC_2 <- foldchange(df$P02, df$counts_D1_averages)
 df$U1B<- foldchange2logratio(df$LC_2, base = 2)
-df$LC_3 <- foldchange(df$P03, df$counts_U0_average)
+df$LC_3 <- foldchange(df$P03, df$counts_D1_averages)
 df$U1C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
@@ -264,18 +264,18 @@ counts_U11_average<- rowMeans(counts_U11)
 ```
 
 ```{r}
-df <- data.frame(counts_U0_average)
+df <- data.frame(counts_D11_average)
 ```
 
 ```{r}
 df$P01 <- counts_U11$One
 df$P02 <- counts_U11$two
 df$P03 <- counts_U11$three
-df$LC_1 <- foldchange(df$P01, df$counts_U0_average) 
+df$LC_1 <- foldchange(df$P01, df$counts_D11_average) 
 df$U11A <- foldchange2logratio(df$LC_1, base = 2)
-df$LC_2 <- foldchange(df$P02, df$counts_U0_average)
+df$LC_2 <- foldchange(df$P02, df$counts_D11_average)
 df$U11B<- foldchange2logratio(df$LC_2, base = 2)
-df$LC_3 <- foldchange(df$P03, df$counts_U0_average)
+df$LC_3 <- foldchange(df$P03, df$counts_D11_average)
 df$U11C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
@@ -319,7 +319,8 @@ mat <- combined_redo[  , -2]
 ```
 
 ```{r}
-mat_num2<- na.omit(mat)
+mat_num <- mat[ , c(1:4, 11:13, 5:7, 14:16, 8:10, 17:19)]
+mat_num2<- na.omit(mat_num)
 mat_num3 <- as.matrix(mat_num2)
 ```
 
