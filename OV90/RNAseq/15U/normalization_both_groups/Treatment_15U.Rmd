@@ -54,7 +54,7 @@ write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalized_counts_15U.csv")
 This is going to tell you information about the results from running DESeq2 
 ```{r}
 res <- results(dds, contrast= c("condition", "P1_15U","P0_15U"))
-write.csv(res_3, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P10_P1_15U.csv")
+write.csv(res_3, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_P1_15U.csv")
 ```
 
 ```{r echo=FALSE}
@@ -72,7 +72,7 @@ plotMA(res_2, ylim=c(-2,2))
 ```
 
 ```{r}
-res_3 <- results(dds, contrast=c("condition","P1_15U","P1.1_15U"))
+res_3 <- results(dds, contrast=c("condition","P1.1_15U","P1_15U"))
 write.csv(res_3, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P11_15U.csv")
 ```
 
@@ -81,7 +81,7 @@ plotMA(res_3, ylim=c(-2,2))
 ```
 
 ```{r}
-res_4 <- results(dds, contrast=c("condition","P1_DMSO","P1.1_DMSO"))
+res_4 <- results(dds, contrast=c("condition","P1.1_DMSO","P1_DMSO"))
 summary(res_4)
 write.csv(res_4, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P11_DMSO.csv")
 ```
@@ -92,7 +92,7 @@ plotMA(res_4, ylim=c(-2,2))
 ```{r}
 res_5 <- results(dds, contrast=c("condition", "P1.1_DMSO", "P0_DMSO"))
 summary(res_5)
-write.csv(res_5, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_P0_DMSO.csv")
+write.csv(res_5, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_P11_DMSO.csv")
 ```
 ```{r echo=FALSE}
 plotMA(res_5, ylim=c(-2,2))
@@ -101,7 +101,7 @@ plotMA(res_5, ylim=c(-2,2))
 ```{r}
 res_6 <- results(dds, contrast=c("condition", "P1_DMSO", "P0_DMSO"))
 summary(res_6)
-write.csv(res_6, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P0_DMSO.csv")
+write.csv(res_6, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_P1_DMSO.csv")
 ```
 
 ```{r echo=FALSE}
