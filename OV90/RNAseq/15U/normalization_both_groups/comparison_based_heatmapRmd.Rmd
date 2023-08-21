@@ -1,0 +1,347 @@
+---
+title: "heatmap_by_comparison"
+output: html_document
+date: "2023-08-18"
+---
+No Scientific notation
+```{r}
+options(scipen = 999)
+```
+
+```{r}
+library(tidyr)
+library(ggplot2)
+library(scales) # needed for oob parameter
+library(viridis)
+library(reshape2)
+library(data.table)
+library(gtools)
+library(circlize)
+```
+
+```{r}
+P0_P1_DMSO <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P0_DMSO.csv")
+P0_P11_DMSO <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_P0_DMSO.csv")
+P0_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_15U_DMSO.csv")
+P1_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_15U_DMSO.csv")
+P11_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_15U_DMSO.csv")
+counts <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalized_counts_15U.csv")
+```
+
+```{r}
+P0_P1_DMSO2 <- P0_P1_DMSO[P0_P1_DMSO$padj <= .05 & P0_P1_DMSO$log2FoldChange >= 1.5, ]
+P0_P1_DMSO3 <- P0_P1_DMSO[P0_P1_DMSO$padj <= .05 & P0_P1_DMSO$log2FoldChange <= -1.5, ]
+
+P0_P11_DMSO2 <- P0_P11_DMSO[P0_P11_DMSO$padj <= .05 & P0_P11_DMSO$log2FoldChange >= 1.5, ]
+P0_P11_DMSO3 <- P0_P11_DMSO[P0_P11_DMSO$padj <= .05 & P0_P11_DMSO$log2FoldChange <= -1.5, ]
+
+P0_15U2 <- P0_15U[P0_15U$padj <= .05 & P0_15U$log2FoldChange >= 1.5, ]
+P0_15U3 <- P0_15U[P0_15U$padj <= .05 & P0_15U$log2FoldChange <= -1.5, ]
+
+P1_15U2 <- P1_15U[P1_15U$padj <= .05 & P1_15U$log2FoldChange >= 1.5, ]
+P1_15U3 <- P1_15U[P1_15U$padj <= .05 & P1_15U$log2FoldChange <= -1.5, ]
+
+P11_15U2 <- P11_15U[P11_15U$padj <= .05 & P11_15U$log2FoldChange >= 1.5, ]
+P11_15U3 <- P11_15U[P11_15U$padj <= .05 & P11_15U$log2FoldChange <= -1.5, ]
+```
+
+```{r}
+sigGenes <- as.list(c(P0_P1_DMSO2$X, P0_P1_DMSO3$X, P0_15U2$X, P0_15U3$X, P1_15U2$X, P1_15U3$X, P11_15U2$X, P11_15U3$X, P0_P11_DMSO2$X, P0_P11_DMSO3$X))
+```
+
+```{r}
+counts_D0 <- counts[ , 2:4]
+rownames(counts_D0) <- counts$X
+colnames(counts_D0) <- c("One", "two", "three")
+counts_D0 <- as.data.frame(counts_D0)
+counts_D0_averages <- rowMeans(counts_D0)
+```
+
+```{r}
+df <- data.frame(counts_D0_average)
+```
+
+```{r}
+df$P01 <- counts_D0$One
+df$P02 <- counts_D0$two
+df$P03 <- counts_D0$three
+df$LC_1 <- foldchange(df$P01, df$counts_D0_average) 
+df$D0A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_D0_average)
+df$D0B<- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_D0_average)
+df$D0C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide01 <- df_heat
+de21 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+counts_D1 <- counts[ , 5:7]
+rownames(counts_D1) <- counts$X
+colnames(counts_D1) <- c("One", "two", "three")
+counts_D1 <- as.data.frame(counts_D1)
+counts_D1_averages <- rowMeans(counts_D1)
+```
+
+```{r}
+df <- data.frame(counts_D0_averages)
+```
+
+```{r}
+df$P01 <- counts_D1$One
+df$P02 <- counts_D1$two
+df$P03 <- counts_D1$three
+df$LC_1 <- foldchange(df$P01, df$counts_D0_averages) 
+df$D1A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_D0_averages)
+df$D1B<- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_D0_averages)
+df$D1C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide02 <- df_heat
+de22 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+counts_D11 <- counts[ , 8:10]
+rownames(counts_D11) <- counts$X
+colnames(counts_D11) <- c("One", "two", "three")
+counts_D11 <- as.data.frame(counts_D11)
+counts_D11_average <- rowMeans(counts_D11)
+```
+
+```{r}
+df <- data.frame(counts_D0_average)
+```
+
+```{r}
+df$P01 <- counts_D11$One
+df$P02 <- counts_D11$two
+df$P03 <- counts_D11$three
+df$LC_1 <- foldchange(df$P01, df$counts_D0_average) 
+df$D11A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_D0_average)
+df$D11B<- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_D0_average)
+df$D11C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide03 <- df_heat
+de23 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+counts_U0 <- counts[ , 11:13]
+rownames(counts_U0) <- counts$X
+colnames(counts_U0) <- c("One", "two", "three")
+counts_U0 <- as.data.frame(counts_U0)
+counts_U0_average<- rowMeans(counts_U0)
+```
+
+```{r}
+df <- data.frame(counts_U0_average)
+```
+
+```{r}
+df$P01 <- counts_U0$One
+df$P02 <- counts_U0$two
+df$P03 <- counts_U0$three
+df$LC_1 <- foldchange(df$P01, df$counts_U0_average) 
+df$U0A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_U0_average)
+df$U0B<- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_U0_average)
+df$U0C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide04 <- df_heat
+de24 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+counts_U1 <- counts[ , 14:16]
+rownames(counts_U1) <- counts$X
+colnames(counts_U1) <- c("One", "two", "three")
+counts_U1 <- as.data.frame(counts_U1)
+counts_U1_averages <- rowMeans(counts_U1)
+```
+
+```{r}
+df <- data.frame(counts_U1_averages)
+```
+
+```{r}
+df$P01 <- counts_U1$One
+df$P02 <- counts_U1$two
+df$P03 <- counts_U1$three
+df$LC_1 <- foldchange(df$P01, df$counts_U1_averages) 
+df$U1A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_U1_averages)
+df$U1B<- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_U1_averages)
+df$U1C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide05 <- df_heat
+de25 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+counts_U11 <- counts[ , 17:19]
+rownames(counts_U11) <- counts$X
+colnames(counts_U11) <- c("One", "two", "three")
+counts_U11 <- as.data.frame(counts_U11)
+counts_U11_average<- rowMeans(counts_U11)
+```
+
+```{r}
+df <- data.frame(counts_U11_average)
+```
+
+```{r}
+df$P01 <- counts_U11$One
+df$P02 <- counts_U11$two
+df$P03 <- counts_U11$three
+df$LC_1 <- foldchange(df$P01, df$counts_U11_average) 
+df$U11A <- foldchange2logratio(df$LC_1, base = 2)
+df$LC_2 <- foldchange(df$P02, df$counts_U11_average)
+df$U11B<- foldchange2logratio(df$LC_2, base = 2)
+df$LC_3 <- foldchange(df$P03, df$counts_U11_average)
+df$U11C <- foldchange2logratio(df$LC_3, base = 2)
+```
+
+```{r}
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
+
+```{r}
+df_heat <- df_tokeep[ , c(6,8,10,11)]
+```
+
+```{r}
+# First compare wide vs long version
+deseq2VST_wide06 <- df_heat
+de26 <- melt(df_heat, id.vars=c("gene"))
+```
+
+```{r}
+combined5 <- merge(deseq2VST_wide01, deseq2VST_wide02, all.x=TRUE, all= TRUE)
+combined4 <- merge(combined5, deseq2VST_wide03, all.x=TRUE, all= TRUE)
+combined3 <- merge(combined4, deseq2VST_wide04, all.x=TRUE, all= TRUE)
+combined2 <- merge(combined3, deseq2VST_wide05, all.x=TRUE, all= TRUE)
+combined <- merge(combined2, deseq2VST_wide06, all.x=TRUE, all= TRUE)
+```
+
+```{r}
+write.csv(combined, "~/Desktop/combined_15U_comparison_2.csv")
+```
+
+
+```{r}
+library(readr)
+combined_redo <- read_csv("~/Desktop/combined_15U_comparison_2.csv", 
+    col_types = cols(...1 = col_number(), 
+        gene = col_number(), D0A = col_number(), D0B = col_number(), D0C = col_number(), D1A = col_number(), D1B = col_number(), D1C = col_number(), D11A = col_number(), D11B = col_number(), D11C = col_number(), U0A = col_number(), U0B = col_number(), U0C = col_number(), U1A = col_number(), U1B = col_number(), U1C = col_number(), U11A = col_number(), U11B = col_number(), U11C = col_number()))
+mat <- combined_redo[  , -2]
+```
+
+```{r}
+mat_num <- mat
+mat_num2<- na.omit(mat_num)
+mat_num3 <- as.matrix(mat_num2)
+```
+
+```{r}
+library(RColorBrewer)
+library(gplots)
+mat_num4 <- mat_num3[ , -1]
+coul <- brewer.pal(9, "RdBu") 
+```
+
+```{r}
+coul2 <- coul + scale_color_brewer(direction = -1)
+```
+
+```{r}
+library(ComplexHeatmap)
+pdf("~/Desktop/heatmap_15U.pdf",width=8, height=11)
+Heatmap(mat_num4, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), use_raster= FALSE)
+dev.off()
+```
