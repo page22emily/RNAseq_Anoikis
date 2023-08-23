@@ -58,18 +58,18 @@ counts_D0_averages <- rowMeans(counts_D0)
 ```
 
 ```{r}
-df <- data.frame(counts_D0_average)
+df <- data.frame(counts_D0_averages)
 ```
 
 ```{r}
 df$P01 <- counts_D0$One
 df$P02 <- counts_D0$two
 df$P03 <- counts_D0$three
-df$LC_1 <- foldchange(df$P01, df$counts_D0_average) 
+df$LC_1 <- foldchange(df$P01, df$counts_D0_averages) 
 df$D0A <- foldchange2logratio(df$LC_1, base = 2)
-df$LC_2 <- foldchange(df$P02, df$counts_D0_average)
+df$LC_2 <- foldchange(df$P02, df$counts_D0_averages)
 df$D0B<- foldchange2logratio(df$LC_2, base = 2)
-df$LC_3 <- foldchange(df$P03, df$counts_D0_average)
+df$LC_3 <- foldchange(df$P03, df$counts_D0_averages)
 df$D0C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
@@ -142,7 +142,7 @@ counts_D11_average <- rowMeans(counts_D11)
 ```
 
 ```{r}
-df <- data.frame(counts_D0_average)
+df <- data.frame(counts_D0_averages)
 ```
 
 ```{r}
@@ -341,7 +341,84 @@ coul2 <- coul + scale_color_brewer(direction = -1)
 
 ```{r}
 library(ComplexHeatmap)
-pdf("~/Desktop/heatmap_15U.pdf",width=8, height=11)
+pdf("~/Desktop/heatmap_15U_DMSO_15U_comparison_Separated.pdf",width=8, height=11)
 Heatmap(mat_num4, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), use_raster= FALSE)
 dev.off()
 ```
+
+#averages 
+```{r}
+df2 <- data.frame(counts_D0_average)
+x <- data.frame(counts_D1_averages)
+df2$counts_D1_averages <- x[ , 1]
+x <- data.frame(counts_D11_average)
+df2$counts_D11_averages <- x[ , 1]
+x <- data.frame(counts_U0_average)
+df2$counts_U0_averages <- x[ , 1]
+x <- data.frame(counts_U1_averages)
+df2$counts_U1_averages <- x[ , 1]
+x <- data.frame(counts_U11_average)
+df2$counts_U11_averages <- x[ , 1]
+```
+
+```{r}
+df2$LC_1 <- foldchange(df2$counts_D1_averages, df2$counts_D0_average) 
+df2$DMSO_0_vs_1 <- foldchange2logratio(df2$LC_1, base = 2)
+df2$LC_2 <- foldchange(df2$counts_D11_averages, df2$counts_D0_average) 
+df2$DMSO_0_vs_11 <- foldchange2logratio(df2$LC_2, base = 2)
+df2$LC_3 <- foldchange(df2$counts_U1_averages, df2$counts_U0_average)
+df2$U_0_vs_1 <- foldchange2logratio(df2$LC_3, base = 2)
+df2$LC_4 <- foldchange(df2$counts_U11_averages, df2$counts_U0_averages) 
+df2$U_0_vs_11 <- foldchange2logratio(df2$LC_4, base = 2)
+```
+
+```{r}
+mat <- df2[ , c(8, 10, 12, 14)]
+```
+
+```{r}
+mat2<- mat[rownames(mat) %in% sigGenes, ]
+mat3 <- as.matrix.data.frame(mat2)
+```
+
+```{r}
+rownames(mat3) <- NULL
+```
+
+```{r}
+sub(-Inf, NA, mat3)
+sub(Inf, NA, mat3)
+```
+
+```{r}
+write.csv(mat3, "~/Desktop/lfc_averages_15U_comparison_separated_averages.csv")
+```
+
+```{r}
+library(readr)
+mat4<- read_csv("~/Desktop/lfc_averages_15U_comparison_separated_averages.csv", 
+    col_types = cols(...1 = col_number(), 
+        DMSO_0_vs_1 = col_number(), DMSO_0_vs_11 = col_number(), 
+        U_0_vs_1 = col_number(), U_0_vs_11 = col_number()))
+```
+
+```{r}
+mat5<- mat4[ , -1]
+mat6 <- na.omit(mat5)
+```
+
+
+```{r}
+coul <- brewer.pal(9, "RdBu") 
+```
+
+```{r}
+coul2 <- coul + scale_color_brewer(direction = -1)
+```
+
+```{r}
+pdf("~/Desktop/heatmap_15U_DMSO_15U_comparison_Separated_averages.pdf",width=8, height=11)
+Heatmap(mat6, col = coul2, cluster_columns = FALSE, row_names_gp = gpar(fontsize = 4), use_raster= FALSE)
+dev.off()
+```
+

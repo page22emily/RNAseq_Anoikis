@@ -1,0 +1,54 @@
+---
+title: "Gene_Scatter_Plots"
+output: html_document
+date: "2023-08-21"
+---
+
+```{r}
+options(scipen = 999)
+```
+
+```{r}
+library(tidyr)
+library(ggplot2)
+library(scales) # needed for oob parameter
+library(viridis)
+library(reshape2)
+library(data.table)
+library(gtools)
+library(circlize)
+```
+
+```{r}
+P0_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_15U_DMSO.csv")
+P1_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_15U_DMSO.csv")
+P11_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_15U_DMSO.csv")
+```
+
+```{r}
+P0_15U2 <- P0_15U[P0_15U$padj <= .05 & P0_15U$log2FoldChange >= 1.5, ]
+P0_15U3 <- P0_15U[P0_15U$padj <= .05 & P0_15U$log2FoldChange <= -1.5, ]
+
+P1_15U2 <- P1_15U[P1_15U$padj <= .05 & P1_15U$log2FoldChange >= 1.5, ]
+P1_15U3 <- P1_15U[P1_15U$padj <= .05 & P1_15U$log2FoldChange <= -1.5, ]
+
+P11_15U2 <- P11_15U[P11_15U$padj <= .05 & P11_15U$log2FoldChange >= 1.5, ]
+P11_15U3 <- P11_15U[P11_15U$padj <= .05 & P11_15U$log2FoldChange <= -1.5, ]
+```
+
+```{r}
+sigGenes <- as.list(c(P0_15U2$X, P0_15U3$X, P1_15U2$X, P1_15U3$X, P11_15U2$X, P11_15U3$X))
+```
+
+```{r}
+df <- P0_15U
+```
+
+```{r}
+rownames(df) <- df$X
+df$gene <- rownames(df)
+```
+
+```{r}
+df_tokeep <- df[df$gene %in% sigGenes, ]
+```
