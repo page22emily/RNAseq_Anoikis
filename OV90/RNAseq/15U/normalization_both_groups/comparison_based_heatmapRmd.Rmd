@@ -226,18 +226,18 @@ counts_U1_averages <- rowMeans(counts_U1)
 ```
 
 ```{r}
-df <- data.frame(counts_U1_averages)
+df <- data.frame(counts_U0_average)
 ```
 
 ```{r}
 df$P01 <- counts_U1$One
 df$P02 <- counts_U1$two
 df$P03 <- counts_U1$three
-df$LC_1 <- foldchange(df$P01, df$counts_U1_averages) 
+df$LC_1 <- foldchange(df$P01, df$counts_U0_average) 
 df$U1A <- foldchange2logratio(df$LC_1, base = 2)
-df$LC_2 <- foldchange(df$P02, df$counts_U1_averages)
+df$LC_2 <- foldchange(df$P02, df$counts_U0_average)
 df$U1B<- foldchange2logratio(df$LC_2, base = 2)
-df$LC_3 <- foldchange(df$P03, df$counts_U1_averages)
+df$LC_3 <- foldchange(df$P03, df$counts_U0_average)
 df$U1C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
@@ -268,18 +268,18 @@ counts_U11_average<- rowMeans(counts_U11)
 ```
 
 ```{r}
-df <- data.frame(counts_U11_average)
+df <- data.frame(counts_U0_average)
 ```
 
 ```{r}
 df$P01 <- counts_U11$One
 df$P02 <- counts_U11$two
 df$P03 <- counts_U11$three
-df$LC_1 <- foldchange(df$P01, df$counts_U11_average) 
+df$LC_1 <- foldchange(df$P01, df$counts_U0_average) 
 df$U11A <- foldchange2logratio(df$LC_1, base = 2)
-df$LC_2 <- foldchange(df$P02, df$counts_U11_average)
+df$LC_2 <- foldchange(df$P02, df$counts_U0_average)
 df$U11B<- foldchange2logratio(df$LC_2, base = 2)
-df$LC_3 <- foldchange(df$P03, df$counts_U11_average)
+df$LC_3 <- foldchange(df$P03, df$counts_U0_average)
 df$U11C <- foldchange2logratio(df$LC_3, base = 2)
 ```
 
