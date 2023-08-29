@@ -19,8 +19,8 @@ library(tidyr)
 
 This is for setting up the meta data and DESeq2 object so that you can do your analysis 
 ```{r message= FALSE, warning= FALSE, echo=FALSE}
-sample_meta_data <- read.csv(file= "C:/Users/empage/Documents/Lab_Stuff/Anoikis/OV90/treatment_15U/meta_15U_updated.csv") 
-sampleFiles <- samples$Sample_ID
+sample_meta_data <- read.csv(file= "~/Desktop/meta_15U.csv") 
+sampleFiles <- sample_meta_data$Sample_ID
 sampleCondition <- sample_meta_data$Passage_ID
 sampleTable <- data.frame(sampleName = sampleFiles,
                           fileName = sampleFiles,
@@ -54,7 +54,7 @@ write.csv(counts, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalized_counts_15U.csv")
 This is going to tell you information about the results from running DESeq2 
 ```{r}
 res <- results(dds, contrast= c("condition", "P1_15U","P0_15U"))
-write.csv(res_3, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_P1_15U.csv")
+write.csv(res, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_P1_15U.csv")
 ```
 
 ```{r echo=FALSE}
@@ -63,7 +63,7 @@ plotMA(res, ylim=c(-2,2))
 You can set results to whatever you want to compare from the dds object; see documentation for more if you do not like what it auto selects/ you want more than what this did first 
 Here is an example template. There's a # in front of it so that it is not running 
 ```{r}
-res_2 <- results(dds, contrast=c("condition","P1.1_15U", "P0_15U"))
+res_2 <- results(dds, contrast=c("condition","P11_15U", "P0_15U"))
 write.csv(res_2, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_P11_15U.csv")
 ```
 
@@ -72,7 +72,7 @@ plotMA(res_2, ylim=c(-2,2))
 ```
 
 ```{r}
-res_3 <- results(dds, contrast=c("condition","P1.1_15U","P1_15U"))
+res_3 <- results(dds, contrast=c("condition","P11_15U","P1_15U"))
 write.csv(res_3, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P11_15U.csv")
 ```
 
@@ -81,16 +81,17 @@ plotMA(res_3, ylim=c(-2,2))
 ```
 
 ```{r}
-res_4 <- results(dds, contrast=c("condition","P1.1_DMSO","P1_DMSO"))
+res_4 <- results(dds, contrast=c("condition","P11_DMSO","P1_DMSO"))
 summary(res_4)
 write.csv(res_4, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P11_DMSO.csv")
 ```
+
 ```{r echo=FALSE}
 plotMA(res_4, ylim=c(-2,2))
 ```
 
 ```{r}
-res_5 <- results(dds, contrast=c("condition", "P1.1_DMSO", "P0_DMSO"))
+res_5 <- results(dds, contrast=c("condition", "P11_DMSO", "P0_DMSO"))
 summary(res_5)
 write.csv(res_5, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P0_P11_DMSO.csv")
 ```
@@ -129,7 +130,7 @@ plotMA(res_8, ylim=c(-2,2))
 ```
 
 ```{r}
-res_9 <- results(dds, contrast=c("condition","P1.1_15U","P1.1_DMSO"))
+res_9 <- results(dds, contrast=c("condition","P11_15U","P11_DMSO"))
 summary(res_9)
 write.csv(res_9, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_15U_DMSO.csv")
 ```
