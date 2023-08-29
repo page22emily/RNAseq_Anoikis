@@ -134,6 +134,12 @@ summary(res_9)
 write.csv(res_9, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P11_15U_DMSO.csv")
 ```
 
+```{r}
+res_10 <- results(dds, contrast=c("condition","P1_15U","P0_DMSO"))
+summary(res_10)
+write.csv(res_10, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_15U_DMSO.csv")
+```
+
 ```{r echo=FALSE}
 plotMA(res_9, ylim=c(-2,2))
 ```
