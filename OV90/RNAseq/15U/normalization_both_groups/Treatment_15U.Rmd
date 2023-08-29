@@ -137,7 +137,7 @@ write.csv(res_9, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res
 ```{r}
 res_10 <- results(dds, contrast=c("condition","P1_15U","P0_DMSO"))
 summary(res_10)
-write.csv(res_10, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_15U_DMSO.csv")
+write.csv(res_10, "~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_15U_P0_DMSO.csv")
 ```
 
 ```{r echo=FALSE}
