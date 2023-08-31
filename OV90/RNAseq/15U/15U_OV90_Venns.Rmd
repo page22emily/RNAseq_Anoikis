@@ -1,0 +1,268 @@
+---
+title: "Venns for OV90 and 15U"
+output: html_document
+date: "2023-08-31"
+---
+
+Round 2. 
+```{r, include = FALSE}
+library(gplots)
+library(ggplot2)
+library("venn")
+library("ggVennDiagram")
+library("sf")
+```
+Comparisons 
+```{r, include = FALSE}
+P0_P1_DMSO <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_P0_DMSO.csv")
+P0_DMSO_P1_15U <- read.csv("~/RNAseq_Anoikis/OV90/RNAseq/15U/normalization_both_groups/res/P1_15U_P0_DMSO.csv")
+Ov90_P0_P1 <- read.csv("~/Desktop/P1_vs_P0.csv")
+```
+
+```{r, include = FALSE}
+P0_P1_DMSO2 <- P0_P1_DMSO[P0_P1_DMSO$padj <= .05 & P0_P1_DMSO$log2FoldChange >= 1.5, ]
+P0_P1_DMSO3 <- P0_P1_DMSO[P0_P1_DMSO$padj <= .05 & P0_P1_DMSO$log2FoldChange <= -1.5, ]
+P0_DMSO_P1_15U2 <- P0_DMSO_P1_15U[P0_DMSO_P1_15U$padj <= .05 & P0_DMSO_P1_15U$log2FoldChange >= 1.5, ]
+P0_DMSO_P1_15U3 <- P0_DMSO_P1_15U[P0_DMSO_P1_15U$padj <= .05 & P0_DMSO_P1_15U$log2FoldChange <= -1.5, ]
+P0_vs_P1_OV902 <- Ov90_P0_P1[Ov90_P0_P1$padj <= .05 & Ov90_P0_P1$log2FoldChange >= 1.5, ]
+P0_vs_P1_OV903  <- Ov90_P0_P1[Ov90_P0_P1$padj <= .05 & Ov90_P0_P1$log2FoldChange <= -1.5, ]
+```
+
+Venn Comparisons 
+
+Up Regulated between DMSO and 15U P0 to P1 
+```{r, include = FALSE}
+DMSO <- na.omit(P0_P1_DMSO2$X)
+U15 <- na.omit(P0_DMSO_P1_15U2$X)
+```
+
+```{r, include = FALSE}
+x <- list(U15= U15, DMSO= DMSO)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("U15"= "#482677FF", "DMSO"= "#29AF7FFF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
+
+Up Regulated between 15U and OV90 P0 and P1 
+```{r, include = FALSE}
+OV90 <- na.omit(P0_vs_P1_OV902$X)
+U15 <- na.omit(P0_DMSO_P1_15U2$X)
+```
+
+```{r, include = FALSE}
+x <- list(U15= U15, OV90= OV90)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("U15"= "#482677FF", "OV90"= "#55C667FF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
+
+Up Regulated between DMSO and OV90 P0 and P1 
+```{r, include = FALSE}
+OV90 <- na.omit(P0_vs_P1_OV902$X)
+DMSO <- na.omit(P0_P1_DMSO2$X)
+```
+
+```{r, include = FALSE}
+x <- list(DMSO= DMSO, OV90= OV90)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("DMSO"= "#29AF7FFF", "OV90"= "#55C667FF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
+
+Down Regulated between DMSO and 15U P0 to P1 
+```{r, include = FALSE}
+DMSO <- na.omit(P0_P1_DMSO3$X)
+U15 <- na.omit(P0_DMSO_P1_15U3$X)
+```
+
+```{r, include = FALSE}
+x <- list(U15= U15, DMSO= DMSO)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("U15"= "#482677FF", "DMSO"= "#29AF7FFF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
+
+Down Regulated between 15U and OV90 P0 and P1 
+```{r, include = FALSE}
+OV90 <- na.omit(P0_vs_P1_OV903$X)
+U15 <- na.omit(P0_DMSO_P1_15U3$X)
+```
+
+```{r, include = FALSE}
+x <- list(U15= U15, OV90= OV90)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("U15"= "#482677FF", "OV90"= "#55C667FF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
+
+Down Regulated between DMSO and OV90 P0 and P1 
+```{r, include = FALSE}
+OV90 <- na.omit(P0_vs_P1_OV903$X)
+DMSO <- na.omit(P0_P1_DMSO3$X)
+```
+
+```{r, include = FALSE}
+x <- list(DMSO= DMSO, OV90= OV90)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("DMSO"= "#29AF7FFF", "OV90"= "#55C667FF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
+
+
+Combined Significant Genes based on P val and L2FC
+
+DMSO and 15U P0 to P1 
+```{r, include = FALSE}
+DMSO <- na.omit(c(P0_P1_DMSO3$X, P0_P1_DMSO2$X))
+U15 <- na.omit(c(P0_DMSO_P1_15U3$X, P0_DMSO_P1_15U2$X))
+```
+
+```{r, include = FALSE}
+x <- list(U15= U15, DMSO= DMSO)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("U15"= "#482677FF", "DMSO"= "#29AF7FFF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
+
+15U and OV90 P0 and P1 
+```{r, include = FALSE}
+OV90 <- na.omit(c(P0_vs_P1_OV903$X, P0_vs_P1_OV902$X))
+U15 <- na.omit(c(P0_DMSO_P1_15U3$X, P0_DMSO_P1_15U2$X))
+```
+
+```{r, include = FALSE}
+x <- list(U15= U15, OV90= OV90)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("U15"= "#482677FF", "OV90"= "#55C667FF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
+
+DMSO and OV90 P0 and P1 
+```{r, include = FALSE}
+OV90 <- na.omit(c(P0_vs_P1_OV903$X, P0_vs_P1_OV902$X))
+DMSO <- na.omit(c(P0_P1_DMSO3$X, P0_P1_DMSO2$X))
+```
+
+```{r, include = FALSE}
+x <- list(DMSO= DMSO, OV90= OV90)
+venn <- Venn(x)
+d <- process_data(venn)
+d2 <- process_data(venn)
+d2@region <- st_polygonize(d@setEdge)
+```
+
+
+```{r}
+col <- c("DMSO"= "#29AF7FFF", "OV90"= "#55C667FF")
+ggplot() +
+geom_sf(aes(fill = name), data = venn_region(d2)) +
+geom_sf(aes(color = name), data = venn_setedge(d)) +
+geom_sf_text(aes(label = count), data = venn_region(d)) +
+scale_color_manual(values = alpha(col, .7)) +
+scale_fill_manual(values = alpha(col, .7)) +
+theme_void()
+```
